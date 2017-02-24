@@ -4,12 +4,45 @@
    var localPlayer; // Local player
    var remotePlayers; // Remote players
    var socket; // Socket connection
+
+var map = {
+    cols: 12,
+    rows: 12,
+    tsize: 64,
+    layers: [[
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+        3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
+        3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
+        3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
+        3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
+        3, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 3,
+        3, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 3,
+        3, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 3,
+        3, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3,
+        3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 3,
+        3, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 3,
+        3, 3, 3, 1, 1, 2, 3, 3, 3, 3, 3, 3
+    ], [
+        4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4,
+        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+        4, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 4,
+        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+        4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,
+        4, 4, 4, 0, 5, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 0, 0, 3, 3, 3, 3, 3, 3, 3
+]]}
+
    function init() {
        socket = io.connect('/', { transports: ["websocket"] });
        canvas = document.getElementById("gameCanvas");
        ctx = canvas.getContext("2d");
-       canvas.width = window.innerWidth;
-       canvas.height = window.innerHeight;
+       canvas.width = 512;
+       canvas.height = 512;
        keys = new Keys();
        remotePlayers = [];
        localPlayer = [];
@@ -19,11 +52,11 @@
    function setEventHandlers() {
        window.addEventListener("keydown", onKeydown, false);
        window.addEventListener("keyup", onKeyup, false);
-       window.addEventListener("resize", onResize, false);
        socket.on("getUserDataClient", getUserDataClient);
        socket.on("newPlayerClient", newPlayer);
        socket.on("movePlayerClient", movePlayer);
        socket.on("removePlayerClient", removePlayer);
+       socket.on("disconnect", disconnectPlayer);
    }
    // Keyboard key down
    function onKeydown(e) {
@@ -38,11 +71,11 @@
        };
    };
 
-   function onResize(e) {
-       canvas.width = window.innerWidth;
-       canvas.height = window.innerHeight;
-   };
-
+   function disconnectPlayer(data) {
+       console.log('user disconnected');
+       alert("Server Connection Lost")
+       window.location.href = './';
+   }
 
    function getUserDataClient(data) {
        localPlayer = new Player(data.id, data.x, data.y);
@@ -112,7 +145,10 @@
     **************************************************/
    function draw() {
        // Wipe the canvas clean
-       ctx.clearRect(0, 0, canvas.width, canvas.height);
+       ctx.fillStyle = "#2d2";
+       ctx.fillRect(0, 0, canvas.width, canvas.height);
+       ctx.fillStyle = "#000000";
+       // ctx.clearRect(0, 0, canvas.width, canvas.height);
        // Draw the local player
        localPlayer.draw(ctx);
        // Draw the remote players

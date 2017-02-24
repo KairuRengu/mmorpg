@@ -5,7 +5,7 @@ var Player = function(id,startX, startY) {
 	var x = startX,
 		y = startY,
 		id = id,
-		moveAmount = 2;
+		moveAmount = 5;
 	
 	// Getters and setters
 	var getX = function() {

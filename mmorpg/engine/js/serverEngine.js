@@ -1,9 +1,8 @@
 Player = require("../classes/Player").Player;
-// World = require("../classes/World").World;
+// World = require("../classes/World");
 players = [];
 //////////////////////////////////////////////////////////////////////////////////////////
 module.exports = function(app, UUID, socket) {
-        // this.players = players
         socket.sockets.on('connection', function(client) {
             client.userid = UUID();
             var startX = 55 //Math.round(Math.random() * (500 - 5))
