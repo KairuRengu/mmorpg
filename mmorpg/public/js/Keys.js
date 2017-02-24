@@ -8,9 +8,9 @@ var Keys = function(up, left, right, down) {
 		down = down || false;
 		
 	var onKeyDown = function(e) {
-		var that = this,
-			c = e.keyCode;
-		switch (c) {
+		var that = this
+			// c = e.keyCode;
+		switch (e.keyCode) {
 			// Controls
 			case 37: // Left
 				that.left = true;
@@ -28,9 +28,9 @@ var Keys = function(up, left, right, down) {
 	};
 	
 	var onKeyUp = function(e) {
-		var that = this,
-			c = e.keyCode;
-		switch (c) {
+		var that = this
+			// c = e.keyCode;
+		switch (e.keyCode) {
 			case 37: // Left
 				that.left = false;
 				break;

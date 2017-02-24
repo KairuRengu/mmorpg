@@ -5,8 +5,8 @@ players = [];
 module.exports = function(app, UUID, socket) {
         socket.sockets.on('connection', function(client) {
             client.userid = UUID();
-            var startX = 55 //Math.round(Math.random() * (500 - 5))
-            var startY = 55 //Math.round(Math.random() * (500 - 5));
+            var startX = 32 //Math.round(Math.random() * (500 - 5))
+            var startY = 32 //Math.round(Math.random() * (500 - 5));
             var newPlayer = new Player(client.userid, startX, startY);
             client.emit('getUserDataClient', { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY(), userData: "Some Items" });
             players.push(newPlayer);
