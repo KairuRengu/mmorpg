@@ -10,7 +10,9 @@ var Player = function(id, startX, startY) {
         id = id,
         moveSpeed = 2,
         attackSpeed = 100,
-        canAction = true
+        canAction = true,
+        equipt = [],
+        inventory = []
         // Getters and setters
     var getX = function() {
         return x;
@@ -20,6 +22,18 @@ var Player = function(id, startX, startY) {
     };
     var getID = function() {
         return id;
+    };
+    var setEquipt = function(array) {
+        equipt = array;
+    };
+    var getEquipt = function() {
+        return equipt;
+    };
+    var setInventory = function(array) {
+        inventory = array;
+    };
+    var getInventory = function() {
+        return inventory;
     };
     var getDir = function() {
         return direction;
@@ -93,6 +107,10 @@ var Player = function(id, startX, startY) {
         getCanAction: getCanAction,
         setCanAction: setCanAction,
         getDir: getDir,
-        setDir: setDir
+        setDir: setDir,
+        setEquipt:setEquipt,
+        getEquipt:getEquipt,
+        setInventory:setInventory,
+        getInventory:getInventory
     }
 };

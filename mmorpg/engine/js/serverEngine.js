@@ -8,7 +8,7 @@ module.exports = function(app, UUID, socket) {
             var startX = 32 //Math.round(Math.random() * (500 - 5))
             var startY = 32 //Math.round(Math.random() * (500 - 5));
             var newPlayer = new Player(client.userid, startX, startY);
-            client.emit('getUserDataClient', { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY(), userData: "Some Items" });
+            client.emit('getUserDataClient', { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY(),  userEquipt: ["rock","none","none","none","none","none"], userInventory: ["none","sword","none","none","none","none","none","none"] });
             players.push(newPlayer);
             console.log('Player Connected: ' + client.userid);
             //

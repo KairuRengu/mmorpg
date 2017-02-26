@@ -6,13 +6,14 @@
    var socket; // Socket connection
    var playerList;
    var consoleList;
+   var equiptTable;
+   var inventoryTable;
    tiles = new Image();
    tiles.src = "../assets/tiles.png";
    objects = new Image();
    objects.src = "../assets/objects.png";
    actions = new Image();
    actions.src = "../assets/actions.png";
-   //
    var map = {
        cols: 16,
        rows: 16,
@@ -97,6 +98,8 @@
        socket = io.connect('/', { transports: ["websocket"] });
        playerList = document.getElementById("playerList");
        consoleList = document.getElementById("consoleList");
+       equiptTable = document.getElementById("equiptTable");
+       inventoryTable = document.getElementById("inventoryTable");
        canvas = document.getElementById("gameCanvas");
        ctx = canvas.getContext("2d");
        canvas.width = 512;
@@ -141,12 +144,29 @@
        console.log('ID:  ' + localPlayer.getID());
        console.log('X:  ' + localPlayer.getX());
        console.log('Y:  ' + localPlayer.getY());
-       console.log('Data:  ' + data.userData);
+       console.log('Equipt:  ' + data.userEquipt);
+       localPlayer.setEquipt(data.userEquipt)
+       console.log('Inventory:  ' + data.userInventory);
+       localPlayer.setInventory(data.userInventory)
        console.log("----------------------------------------------")
        socket.emit("getPlayersServer");
        var item = document.createElement('li');
        item.appendChild(document.createTextNode(localPlayer.getID()));
        playerList.appendChild(item);
+       //
+       var slots = ["Hand","Head","Body","Legs","Amulet","Misc"]
+      var row = equiptTable.insertRow(0);
+      var rowName = equiptTable.insertRow(1);
+       for (var i = 0; i <= localPlayer.getEquipt().length-1; i++) {
+         row.insertCell(i).innerHTML = '<img src="./assets/items/'+localPlayer.getEquipt()[i]+'.png">';
+         rowName.insertCell(i).innerHTML = slots[i];
+       }
+       
+      var row = inventoryTable.insertRow(0);
+       for (var i = 0; i <= localPlayer.getInventory().length-1; i++) {
+         row.insertCell(i).innerHTML = '<img src="./assets/items/'+localPlayer.getInventory()[i]+'.png">';
+       }
+    
        animate();
    };
 
