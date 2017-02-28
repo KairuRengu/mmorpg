@@ -8,9 +8,17 @@
     app.use(cookieParser())
     app.use(express.static(__dirname + '/public'));
     app.set('superSecret', "KeySecret");
-    var server = http.createServer(app)
-    server.listen(port)
-    console.log('Server Started on Port:  ' + port);
+    console.log("===========================================Starting Server");
+    var server = http.createServer(app).listen(port)
+    console.log("Server Started On Port: " + port);
+    var socket = io.listen(server);
+    console.log("Socket.IO Server Started");
+    console.log("===========================================Loading Worlds");
+    var World = require("./engine/classes/World").World();
+    console.log("===========================================Starting Game Engine");
+    require('./engine/js/serverEngine.js')(app, UUID, socket, World);
+    console.log("Game Engine Started");
+    console.log("===========================================Serving Static Files");
     app.get('/', function(req, res) {
         res.sendFile('index.html');
     });
@@ -18,6 +26,5 @@
         var file = req.params[0];
         res.sendFile(__dirname + '/' + file);
     });
-
-    var socket = io.listen(server);
-    require('./engine/js/serverEngine.js')(app, UUID, socket);
+    console.log("Files Served");
+    console.log("===========================================Ready For Users");

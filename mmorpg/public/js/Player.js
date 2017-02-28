@@ -114,3 +114,9 @@ var Player = function(id, startX, startY) {
         getInventory: getInventory
     }
 };
+try{
+exports.Player = Player;
+}
+catch(err){
+
+}
