@@ -3,8 +3,8 @@ var Player = function(id, startX, startY) {
     var y = startY
     var direction = "down"
     var id = id
-    var moveSpeed = 2
-    var attackSpeed = 100
+    var moveSpeed = 32
+    var attackSpeed = 1000
     var canAction = true
     var equipt = []
     var inventory = []
@@ -39,9 +39,7 @@ var Player = function(id, startX, startY) {
     var getMoveSpeed = function() {
         return moveSpeed;
     };
-    var getAttackSpeed = function() {
-        return attackSpeed;
-    };
+
     var getCanAction = function() {
         return canAction;
     };
@@ -63,7 +61,6 @@ var Player = function(id, startX, startY) {
         id: id,
         getID: getID,
         getMoveSpeed: getMoveSpeed,
-        getAttackSpeed: getAttackSpeed,
         getCanAction: getCanAction,
         setCanAction: setCanAction,
         getDir: getDir,

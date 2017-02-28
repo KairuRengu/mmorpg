@@ -8,9 +8,9 @@ var Player = function(id, startX, startY) {
     var y = startY
     var direction = "down"
     var id = id
-    var moveSpeed = 2
-    var attackSpeed = 100
+    var moveSpeed = 50
     var canAction = true
+    var canMove = true
     var equipt = []
     var inventory = []
         // Getters and setters
@@ -44,14 +44,18 @@ var Player = function(id, startX, startY) {
     var getMoveSpeed = function() {
         return moveSpeed;
     };
-    var getAttackSpeed = function() {
-        return attackSpeed;
-    };
+
     var getCanAction = function() {
         return canAction;
     };
     var setCanAction = function(bool) {
         canAction = bool;
+    };
+        var getCanMove = function() {
+        return canMove;
+    };
+    var setCanMove = function(bool) {
+        canMove = bool;
     };
     var setX = function(newX) {
         x = newX;
@@ -100,8 +104,9 @@ var Player = function(id, startX, startY) {
         draw: draw,
         id: id,
         getID: getID,
+        setCanMove:setCanMove,
+        getCanMove:getCanMove,
         getMoveSpeed: getMoveSpeed,
-        getAttackSpeed: getAttackSpeed,
         getCanAction: getCanAction,
         setCanAction: setCanAction,
         getDir: getDir,

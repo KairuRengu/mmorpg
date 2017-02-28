@@ -17,7 +17,8 @@
    actions.src = "../assets/actions.png";
    window.requestAnimFrame = (function() {
        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function( /* function */ callback, /* DOMElement */ element) {
-           window.setTimeout(callback, 1000/60);
+           // window.setTimeout(callback, 1000/60);
+           window.setTimeout(callback, 1000);
        };
    })();
 
@@ -163,46 +164,63 @@
     **************************************************/
    //
    function moveLeft() {
-       if (world.getCoordTile(localPlayer.getX() - 17, localPlayer.getY()) != 0) {
-           return
+       if (world.getTile(0, world.getXCoord(localPlayer.getX()) - 1, world.getYCoord(localPlayer.getY())) == 1) {
+           return }
+       if (localPlayer.getCanMove()) {
+           var newX = localPlayer.getX()
+           localPlayer.setCanMove(false);
+           newX -= 32
+           localPlayer.setX(newX)
+           setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
        }
-       var newX = localPlayer.getX()
-       newX -= localPlayer.getMoveSpeed()
-       localPlayer.setX(newX)
    }
 
    function moveRight() {
-       if (world.getCoordTile(localPlayer.getX() + 16, localPlayer.getY()) != 0) {
-           return
+       if (world.getTile(0, world.getXCoord(localPlayer.getX()) + 1, world.getYCoord(localPlayer.getY())) == 1) {
+           return }
+       if (localPlayer.getCanMove()) {
+           var newX = localPlayer.getX()
+           localPlayer.setCanMove(false);
+           newX += 32
+           localPlayer.setX(newX)
+           setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
        }
-       var newX = localPlayer.getX()
-       newX += localPlayer.getMoveSpeed()
-       localPlayer.setX(newX)
    }
 
    function moveUp() {
-       if (world.getCoordTile(localPlayer.getX(), localPlayer.getY() - 17) != 0) {
-           return
+       if (world.getTile(0, world.getXCoord(localPlayer.getX()), world.getYCoord(localPlayer.getY()) - 1) == 1) {
+           return }
+       if (localPlayer.getCanMove()) {
+           var newY = localPlayer.getY()
+           localPlayer.setCanMove(false);
+           newY -= 32
+           localPlayer.setY(newY)
+           setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
        }
-       var newY = localPlayer.getY()
-       newY -= localPlayer.getMoveSpeed()
-       localPlayer.setY(newY)
    }
 
    function moveDown() {
-       if (world.getCoordTile(localPlayer.getX(), localPlayer.getY() + 16) != 0) {
-           return
+       if (world.getTile(0, world.getXCoord(localPlayer.getX()), world.getYCoord(localPlayer.getY()) + 1) == 1) {
+           return }
+       if (localPlayer.getCanMove()) {
+           var newY = localPlayer.getY()
+           localPlayer.setCanMove(false);
+           newY += 32
+           localPlayer.setY(newY)
+           setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
        }
-       var newY = localPlayer.getY()
-       newY += localPlayer.getMoveSpeed()
-       localPlayer.setY(newY)
    }
 
    function actionReset() {
        localPlayer.setCanAction(true);
    }
 
+   function moveReset() {
+       localPlayer.setCanMove(true);
+   }
+
    function update() {
+       console.log(world.getXCoord(localPlayer.getX())+" | "+world.getYCoord(localPlayer.getY()))
        var prevX = localPlayer.getX();
        var prevY = localPlayer.getY();
        //
@@ -228,7 +246,7 @@
                console.log("ATTACK")
                socket.emit("attackActionPlayerServer", { id: localPlayer.getID() });
                localPlayer.setCanAction(false);
-               setTimeout(function() { actionReset() }, localPlayer.getAttackSpeed());
+               setTimeout(function() { actionReset() }, 300);
            }
        };
        if (keys.x) {
