@@ -14,7 +14,7 @@
     var socket = io.listen(server);
     console.log("Socket.IO Server Started");
     console.log("===========================================Loading Worlds");
-    var World = require("./engine/classes/World").World();
+    var World = require("./public/js/classes/World").World();
     console.log("===========================================Starting Game Engine");
     require('./engine/js/serverEngine.js')(app, UUID, socket, World);
     console.log("Game Engine Started");

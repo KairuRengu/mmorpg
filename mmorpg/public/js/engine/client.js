@@ -1,6 +1,7 @@
    var canvas; // Canvas DOM element
    var ctx; // Canvas rendering context
    var keys; // Keyboard input
+   var world; //world class
    var localPlayer; // Local player
    var remotePlayers; // Remote players
    var socket; // Socket connection
@@ -14,86 +15,12 @@
    objects.src = "../assets/objects.png";
    actions = new Image();
    actions.src = "../assets/actions.png";
-   var map = {
-       cols: 16,
-       rows: 16,
-       tsize: 32,
-       layers: [
-           [
-               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-           ],
-           [
-               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-           ],
-           [
-               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
-               1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-               1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-           ]
-       ],
-       getTile: function(layer, col, row) {
-           return this.layers[layer][row * map.cols + col];
-       },
-       getCoord: function(x, y) {
-           // var playerX = x+map.tsize/2;
-           // var playerX = y+map.tsize/2;
-           // return playerX
-           var low1 = 0
-           var low2 = 0
-           var high1 = 512
-           var high2 = 16
-           var value = x + 16
-           var xCoord = Math.floor(low2 + (high2 - low2) * (x + 16 - low1) / (high1 - low1));
-           var yCoord = Math.floor(low2 + (high2 - low2) * (y + 16 - low1) / (high1 - low1));
-           return this.getTile(0, xCoord, yCoord)
-               // return this.layers[0][row * map.cols + col];
-       }
-   };
-   //
-   //
+   window.requestAnimFrame = (function() {
+       return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function( /* function */ callback, /* DOMElement */ element) {
+           window.setTimeout(callback, 1000/60);
+       };
+   })();
+
    function init() {
        socket = io.connect('/', { transports: ["websocket"] });
        playerList = document.getElementById("playerList");
@@ -105,6 +32,7 @@
        canvas.width = 512;
        canvas.height = 512;
        keys = new Keys();
+       world = new World();
        remotePlayers = [];
        localPlayer = [];
        setEventHandlers();
@@ -235,7 +163,7 @@
     **************************************************/
    //
    function moveLeft() {
-       if (map.getCoord(localPlayer.getX() - 17, localPlayer.getY()) != 0) {
+       if (world.getCoordTile(localPlayer.getX() - 17, localPlayer.getY()) != 0) {
            return
        }
        var newX = localPlayer.getX()
@@ -244,7 +172,7 @@
    }
 
    function moveRight() {
-       if (map.getCoord(localPlayer.getX() + 16, localPlayer.getY()) != 0) {
+       if (world.getCoordTile(localPlayer.getX() + 16, localPlayer.getY()) != 0) {
            return
        }
        var newX = localPlayer.getX()
@@ -253,7 +181,7 @@
    }
 
    function moveUp() {
-       if (map.getCoord(localPlayer.getX(), localPlayer.getY() - 17) != 0) {
+       if (world.getCoordTile(localPlayer.getX(), localPlayer.getY() - 17) != 0) {
            return
        }
        var newY = localPlayer.getY()
@@ -262,7 +190,7 @@
    }
 
    function moveDown() {
-       if (map.getCoord(localPlayer.getX(), localPlayer.getY() + 16) != 0) {
+       if (world.getCoordTile(localPlayer.getX(), localPlayer.getY() + 16) != 0) {
            return
        }
        var newY = localPlayer.getY()
@@ -298,17 +226,17 @@
        if (keys.z) {
            if (localPlayer.getCanAction()) {
                console.log("ATTACK")
-               socket.emit("attackActionPlayerServer", { id: localPlayer.getID()});
+               socket.emit("attackActionPlayerServer", { id: localPlayer.getID() });
                localPlayer.setCanAction(false);
                setTimeout(function() { actionReset() }, localPlayer.getAttackSpeed());
            }
        };
        if (keys.x) {
            console.log("USE")
-           socket.emit("useActionPlayerServer", { id: localPlayer.getID()});
+           socket.emit("useActionPlayerServer", { id: localPlayer.getID() });
        };
        if ((prevX != localPlayer.getX() || prevY != localPlayer.getY()) ? true : false) {
-       socket.emit("movePlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir() });
+           socket.emit("movePlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir() });
        };
    };
    /**************************************************
@@ -316,14 +244,14 @@
     **************************************************/
    function draw() {
        ctx.clearRect(0, 0, canvas.width, canvas.height);
-       for (var x = 0; x <= map.cols; x++) {
-           for (var y = 0; y <= map.rows; y++) {
-               ctx.drawImage(tiles, map.getTile(1, x, y) * map.tsize, 0, map.tsize, map.tsize, x * map.tsize, y * map.tsize, map.tsize, map.tsize);
+       for (var x = 0; x <= world.getWorldWidth(); x++) {
+           for (var y = 0; y <= world.getWorldHeight(); y++) {
+               ctx.drawImage(tiles, world.getTile(1, x, y) * world.getTileSize(), 0, world.getTileSize(), world.getTileSize(), x * world.getTileSize(), y * world.getTileSize(), world.getTileSize(), world.getTileSize());
            }
        }
-       for (var x = 0; x <= map.cols; x++) {
-           for (var y = 0; y <= map.rows; y++) {
-               ctx.drawImage(objects, map.getTile(2, x, y) * map.tsize, 0, map.tsize, map.tsize, x * map.tsize, y * map.tsize, map.tsize, map.tsize);
+       for (var x = 0; x <= world.getWorldWidth(); x++) {
+           for (var y = 0; y <= world.getWorldHeight(); y++) {
+               ctx.drawImage(objects, world.getTile(2, x, y) * world.getTileSize(), 0, world.getTileSize(), world.getTileSize(), x * world.getTileSize(), y * world.getTileSize(), world.getTileSize(), world.getTileSize());
            }
        }
        // Draw the remote players

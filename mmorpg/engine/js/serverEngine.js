@@ -14,7 +14,7 @@ module.exports = function(app, UUID, socket, World) {
                 //
             this.emit("newPlayerClient", { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY() });
             setEventHandlers(client);
-            console.log("Current Players: " + JSON.stringify(World.getWorldPlayers() + "\r\n"))
+            console.log("Current Players: " + JSON.stringify(World.getWorldPlayers() ))
         });
 
         function setEventHandlers(client) {
@@ -53,7 +53,7 @@ module.exports = function(app, UUID, socket, World) {
             World.removeWorldPlayer(removePlayer);
             // players.splice(players.indexOf(removePlayer), 1);
             this.broadcast.emit("removePlayerClient", { id: removePlayer.getID() });
-            console.log("Current Players: " + JSON.stringify(World.getWorldPlayers() + "\r\n"))
+            console.log("Current Players: " + JSON.stringify(World.getWorldPlayers()))
         }
 
         function GetPlayers() {
