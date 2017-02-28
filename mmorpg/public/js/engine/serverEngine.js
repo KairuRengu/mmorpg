@@ -1,20 +1,25 @@
-Player = require("../classes/PlayerServer").Player;
+Player = require("../classes/Player").Player;
+var DB = require('../../../models/models');
 //////////////////////////////////////////////////////////////////////////////////////////
 module.exports = function(app, UUID, socket, World) {
         socket.sockets.on('connection', function(client) {
-            client.userid = UUID();
-            var startX = 32 //Math.round(Math.random() * (500 - 5))
-            var startY = 32 //Math.round(Math.random() * (500 - 5));
+            DB.User.findOne({}, { 'user.password': 0 }, function(err, user) {
                 //
-            var newPlayer = new Player(client.userid, startX, startY);
-            client.emit('getUserDataClient', { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY(), userEquipt: ["rock", "none", "none", "none", "none", "none"], userInventory: ["none", "sword", "none", "none", "none", "none", "none", "none"] });
-            World.addWorldPlayer(newPlayer);
-            console.log('\r\nPlayer Connected: ' + client.userid);
-            console.log("Loading Map: " + World.getWorldName() + ", Size: " + World.getWorldWidth() + "," + World.getWorldHeight())
+                client.userid = UUID()// client.userid = user._id;
+                var newPlayer = new Player(client.userid);
+                newPlayer.setX(user.player.xCoord)
+                newPlayer.setY(user.player.yCoord)
                 //
-            this.emit("newPlayerClient", { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY() });
-            setEventHandlers(client);
-            console.log("Current Players: " + JSON.stringify(World.getWorldPlayers() ))
+                World.addWorldPlayer(newPlayer);
+                console.log('\r\nPlayer Connected: ' + client.userid);
+                console.log('Player Location: ' + newPlayer.getX() + "," + newPlayer.getY());
+                console.log("Loading Map: " + World.getWorldName() + ", Size: " + World.getWorldWidth() + "," + World.getWorldHeight())
+                    //
+                client.emit('getUserDataClient', { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY(), userEquipt: user.player.equipt, userInventory: user.player.inventory });
+                socket.emit("newPlayerClient", { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY() });
+                setEventHandlers(client);
+                console.log("Current Players: " + JSON.stringify(World.getWorldPlayers()))
+            })
         });
 
         function setEventHandlers(client) {

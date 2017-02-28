@@ -68,7 +68,9 @@
    }
 
    function getUserDataClient(data) {
-       localPlayer = new Player(data.id, data.x, data.y);
+       localPlayer = new Player(data.id);
+       localPlayer.setX(data.x)
+       localPlayer.setY(data.y)
        console.log("----------------------------------------------")
        console.log('ID:  ' + localPlayer.getID());
        console.log('X:  ' + localPlayer.getX());
@@ -78,6 +80,7 @@
        console.log('Inventory:  ' + data.userInventory);
        localPlayer.setInventory(data.userInventory)
        console.log("----------------------------------------------")
+       console.log(world.getWorldName())
        socket.emit("getPlayersServer");
        var item = document.createElement('li');
        item.appendChild(document.createTextNode(localPlayer.getID()));
@@ -99,7 +102,9 @@
 
    function newPlayer(data) {
        // Add new player to the remote players array
-       var newPlayer = new Player(data.id, data.x, data.y);
+       var newPlayer = new Player(data.id);
+       newPlayer.setX(data.x)
+       newPlayer.setY(data.y)
        if (localPlayer.id != newPlayer.id) {
            console.log("Player connected: " + newPlayer.id);
            remotePlayers.push(newPlayer);
@@ -164,48 +169,52 @@
     **************************************************/
    //
    function moveLeft() {
-       if (world.getTile(0, world.getXCoord(localPlayer.getX()) - 1, world.getYCoord(localPlayer.getY())) == 1) {
-           return }
+       if (world.getTile(0, localPlayer.getX() - 1, localPlayer.getY()) == 1) {
+           return
+       }
        if (localPlayer.getCanMove()) {
            var newX = localPlayer.getX()
            localPlayer.setCanMove(false);
-           newX -= 32
+           newX -= 1
            localPlayer.setX(newX)
            setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
        }
    }
 
    function moveRight() {
-       if (world.getTile(0, world.getXCoord(localPlayer.getX()) + 1, world.getYCoord(localPlayer.getY())) == 1) {
-           return }
+       if (world.getTile(0, localPlayer.getX() + 1, localPlayer.getY()) == 1) {
+           return
+       }
        if (localPlayer.getCanMove()) {
            var newX = localPlayer.getX()
            localPlayer.setCanMove(false);
-           newX += 32
+           newX += 1
            localPlayer.setX(newX)
            setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
        }
    }
 
    function moveUp() {
-       if (world.getTile(0, world.getXCoord(localPlayer.getX()), world.getYCoord(localPlayer.getY()) - 1) == 1) {
-           return }
+       if (world.getTile(0, localPlayer.getX(), localPlayer.getY() - 1) == 1) {
+           return
+       }
        if (localPlayer.getCanMove()) {
            var newY = localPlayer.getY()
            localPlayer.setCanMove(false);
-           newY -= 32
+           newY -= 1
            localPlayer.setY(newY)
            setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
        }
    }
 
    function moveDown() {
-       if (world.getTile(0, world.getXCoord(localPlayer.getX()), world.getYCoord(localPlayer.getY()) + 1) == 1) {
-           return }
+       if (world.getTile(0, localPlayer.getX(), localPlayer.getY() + 1) == 1) {
+           return
+       }
        if (localPlayer.getCanMove()) {
            var newY = localPlayer.getY()
            localPlayer.setCanMove(false);
-           newY += 32
+           newY += 1
            localPlayer.setY(newY)
            setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
        }
@@ -220,7 +229,7 @@
    }
 
    function update() {
-       console.log(world.getXCoord(localPlayer.getX())+" | "+world.getYCoord(localPlayer.getY()))
+       // console.log((localPlayer.getX()) + " | " + (localPlayer.getY()))
        var prevX = localPlayer.getX();
        var prevY = localPlayer.getY();
        //
@@ -274,10 +283,12 @@
        }
        // Draw the remote players
        for (var i = 0; i < remotePlayers.length; i++) {
-           remotePlayers[i].draw(ctx);
+        drawPlayer(remotePlayers[i],ctx)
+           // remotePlayers[i].draw(ctx);
        };
        // Draw the local player
-       localPlayer.draw(ctx);
+       drawPlayer(localPlayer,ctx)
+       // localPlayer.draw(ctx);
    };
    /**************************************************
     ** GAME HELPER FUNCTIONS

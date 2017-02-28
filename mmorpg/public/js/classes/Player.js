@@ -1,11 +1,11 @@
-var Player = function(id, startX, startY) {
-    var x = startX
-    var y = startY
+var Player = function(id) {
+    var x = 0
+    var y = 0
     var direction = "down"
     var id = id
-    var moveSpeed = 32
-    var attackSpeed = 1000
+    var moveSpeed = 50
     var canAction = true
+    var canMove = true
     var equipt = []
     var inventory = []
         // Getters and setters
@@ -39,12 +39,17 @@ var Player = function(id, startX, startY) {
     var getMoveSpeed = function() {
         return moveSpeed;
     };
-
     var getCanAction = function() {
         return canAction;
     };
     var setCanAction = function(bool) {
         canAction = bool;
+    };
+    var getCanMove = function() {
+        return canMove;
+    };
+    var setCanMove = function(bool) {
+        canMove = bool;
     };
     var setX = function(newX) {
         x = newX;
@@ -60,6 +65,8 @@ var Player = function(id, startX, startY) {
         setY: setY,
         id: id,
         getID: getID,
+        setCanMove: setCanMove,
+        getCanMove: getCanMove,
         getMoveSpeed: getMoveSpeed,
         getCanAction: getCanAction,
         setCanAction: setCanAction,
@@ -71,4 +78,7 @@ var Player = function(id, startX, startY) {
         getInventory: getInventory
     }
 };
-exports.Player = Player;
+try {
+    exports.Player = Player;
+} catch (err) {}
+

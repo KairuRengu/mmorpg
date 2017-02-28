@@ -1,13 +1,16 @@
     var port = process.env.PORT || 8005
     var io = require('socket.io')({ transports: ['websocket'] });
     var express = require('express')
+    var mongoose = require('mongoose');
+    var config = require('./config/database.js');
     var cookieParser = require('cookie-parser')
     var UUID = require('node-uuid')
     var http = require('http')
     var app = express()
     app.use(cookieParser())
     app.use(express.static(__dirname + '/public'));
-    app.set('superSecret', "KeySecret");
+    mongoose.connect(config.url); // connect to our database
+    app.set('superSecret', config.secret); // secret variable
     console.log("===========================================Starting Server");
     var server = http.createServer(app).listen(port)
     console.log("Server Started On Port: " + port);
