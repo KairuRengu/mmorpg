@@ -154,19 +154,17 @@
        item.appendChild(document.createTextNode(localPlayer.getID()));
        playerList.appendChild(item);
        //
-       var slots = ["Hand","Head","Body","Legs","Amulet","Misc"]
-      var row = equiptTable.insertRow(0);
-      var rowName = equiptTable.insertRow(1);
-       for (var i = 0; i <= localPlayer.getEquipt().length-1; i++) {
-         row.insertCell(i).innerHTML = '<img src="./assets/items/'+localPlayer.getEquipt()[i]+'.png">';
-         rowName.insertCell(i).innerHTML = slots[i];
+       var slots = ["Hand", "Head", "Body", "Legs", "Amulet", "Misc"]
+       var row = equiptTable.insertRow(0);
+       var rowName = equiptTable.insertRow(1);
+       for (var i = 0; i <= localPlayer.getEquipt().length - 1; i++) {
+           row.insertCell(i).innerHTML = '<img src="./assets/items/' + localPlayer.getEquipt()[i] + '.png">';
+           rowName.insertCell(i).innerHTML = slots[i];
        }
-       
-      var row = inventoryTable.insertRow(0);
-       for (var i = 0; i <= localPlayer.getInventory().length-1; i++) {
-         row.insertCell(i).innerHTML = '<img src="./assets/items/'+localPlayer.getInventory()[i]+'.png">';
+       var row = inventoryTable.insertRow(0);
+       for (var i = 0; i <= localPlayer.getInventory().length - 1; i++) {
+           row.insertCell(i).innerHTML = '<img src="./assets/items/' + localPlayer.getInventory()[i] + '.png">';
        }
-    
        animate();
    };
 
@@ -193,6 +191,7 @@
        // Update player position
        movePlayer.setX(data.x);
        movePlayer.setY(data.y);
+       movePlayer.setDir(data.dir);
    };
 
    function removePlayer(data) {
@@ -276,8 +275,9 @@
    }
 
    function update() {
-       // var prevX = localPlayer.getX(),
-       //     prevY = localPlayer.getY();
+       var prevX = localPlayer.getX();
+       var prevY = localPlayer.getY();
+       //
        if (keys.up & !keys.down) {
            moveUp()
            localPlayer.setDir("up")
@@ -298,16 +298,18 @@
        if (keys.z) {
            if (localPlayer.getCanAction()) {
                console.log("ATTACK")
+               socket.emit("attackActionPlayerServer", { id: localPlayer.getID()});
                localPlayer.setCanAction(false);
                setTimeout(function() { actionReset() }, localPlayer.getAttackSpeed());
            }
        };
        if (keys.x) {
            console.log("USE")
+           socket.emit("useActionPlayerServer", { id: localPlayer.getID()});
        };
-       // if ((prevX != newX || prevY != newY) ? true : false) {
-       socket.emit("movePlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY() });
-       // };
+       if ((prevX != localPlayer.getX() || prevY != localPlayer.getY()) ? true : false) {
+       socket.emit("movePlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir() });
+       };
    };
    /**************************************************
     ** GAME DRAW

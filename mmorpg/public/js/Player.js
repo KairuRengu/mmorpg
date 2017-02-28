@@ -4,15 +4,15 @@
 char = new Image();
 char.src = "../assets/character.png";
 var Player = function(id, startX, startY) {
-    var x = startX,
-        y = startY,
-        direction = "down",
-        id = id,
-        moveSpeed = 2,
-        attackSpeed = 100,
-        canAction = true,
-        equipt = [],
-        inventory = []
+    var x = startX
+    var y = startY
+    var direction = "down"
+    var id = id
+    var moveSpeed = 2
+    var attackSpeed = 100
+    var canAction = true
+    var equipt = []
+    var inventory = []
         // Getters and setters
     var getX = function() {
         return x;
@@ -108,9 +108,9 @@ var Player = function(id, startX, startY) {
         setCanAction: setCanAction,
         getDir: getDir,
         setDir: setDir,
-        setEquipt:setEquipt,
-        getEquipt:getEquipt,
-        setInventory:setInventory,
-        getInventory:getInventory
+        setEquipt: setEquipt,
+        getEquipt: getEquipt,
+        setInventory: setInventory,
+        getInventory: getInventory
     }
 };
