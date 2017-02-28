@@ -1,8 +1,3 @@
-/**************************************************
- ** GAME PLAYER CLASS
- **************************************************/
-char = new Image();
-char.src = "../assets/character.png";
 var Player = function(id, startX, startY) {
     var x = startX
     var y = startY
@@ -59,47 +54,12 @@ var Player = function(id, startX, startY) {
     var setY = function(newY) {
         y = newY;
     };
-    // Update player position
-    // Draw player
-    var draw = function(ctx) {
-        ctx.fillText(id, x - 5, y - 5);
-        switch (direction) {
-            // Controls
-            case "down":
-                ctx.drawImage(char, 0, 0, 32, 32, x, y, 32, 32);
-                if (!canAction) {
-                    ctx.drawImage(actions, 0, 0, 32, 32, localPlayer.getX(), localPlayer.getY() + 32, 32, 32);
-                }
-                break;
-            case "up":
-                ctx.drawImage(char, 32, 0, 32, 32, x, y, 32, 32);
-                if (!canAction) {
-                    ctx.drawImage(actions, 0, 0, 32, 32, localPlayer.getX(), localPlayer.getY() - 32, 32, 32);
-                }
-                break;
-            case "left":
-                ctx.drawImage(char, 64, 0, 32, 32, x, y, 32, 32);
-                if (!canAction) {
-                    ctx.drawImage(actions, 0, 0, 32, 32, localPlayer.getX() - 32, localPlayer.getY(), 32, 32);
-                }
-                break;
-            case "right":
-                ctx.drawImage(char, 96, 0, 32, 32, x, y, 32, 32);
-                if (!canAction) {
-                    ctx.drawImage(actions, 0, 0, 32, 32, localPlayer.getX() + 32, localPlayer.getY(), 32, 32);
-                }
-                break;
-        };
-        // ctx.drawImage(char, x, y);
-    };
     // Define which variables and methods can be accessed
     return {
         getX: getX,
         getY: getY,
         setX: setX,
         setY: setY,
-        update: update,
-        draw: draw,
         id: id,
         getID: getID,
         getMoveSpeed: getMoveSpeed,
@@ -114,9 +74,4 @@ var Player = function(id, startX, startY) {
         getInventory: getInventory
     }
 };
-try{
 exports.Player = Player;
-}
-catch(err){
-
-}

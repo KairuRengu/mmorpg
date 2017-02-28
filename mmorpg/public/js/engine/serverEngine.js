@@ -1,4 +1,4 @@
-Player = require("../classes/Player").Player;
+Player = require("../classes/PlayerServer").Player;
 //////////////////////////////////////////////////////////////////////////////////////////
 module.exports = function(app, UUID, socket, World) {
         socket.sockets.on('connection', function(client) {

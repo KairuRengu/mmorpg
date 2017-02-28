@@ -55,4 +55,10 @@ var Player = function(id, startX, startY) {
         getInventory: getInventory
     }
 };
-exports.Player = Player;
+try {
+    exports.Player = Player;
+} catch (err) {
+    console.log("Player Class Loaded [Client]")
+}
+
+

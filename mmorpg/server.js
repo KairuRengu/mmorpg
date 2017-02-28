@@ -16,7 +16,7 @@
     console.log("===========================================Loading Worlds");
     var World = require("./public/js/classes/World").World();
     console.log("===========================================Starting Game Engine");
-    require('./engine/js/serverEngine.js')(app, UUID, socket, World);
+    require('./public/js/engine/serverEngine')(app, UUID, socket, World);
     console.log("Game Engine Started");
     console.log("===========================================Serving Static Files");
     app.get('/', function(req, res) {
