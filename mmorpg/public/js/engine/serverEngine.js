@@ -5,11 +5,11 @@ module.exports = function(app, UUID, socket, World) {
         socket.sockets.on('connection', function(client) {
             DB.User.findOne({}, { 'user.password': 0 }, function(err, user) {
                 //
-                client.userid = UUID()// client.userid = user._id;
+                client.userid = UUID() // client.userid = user._id;
                 var newPlayer = new Player(client.userid);
                 newPlayer.setX(user.player.xCoord)
                 newPlayer.setY(user.player.yCoord)
-                //
+                    //
                 World.addWorldPlayer(newPlayer);
                 console.log('\r\nPlayer Connected: ' + client.userid);
                 console.log('Player Location: ' + newPlayer.getX() + "," + newPlayer.getY());
@@ -36,7 +36,11 @@ module.exports = function(app, UUID, socket, World) {
                 console.log("USE | Player not found: " + data.id);
                 return;
             };
-            console.log("Player " + data.id + " pressed USE on coord: " + actionPlayer.getX() + "," + actionPlayer.getY() + " facing " + actionPlayer.getDir())
+            var entityTile = World.getCoordTileAdj(actionPlayer.getX(), actionPlayer.getY(), actionPlayer.getDir())
+            var entity = World.getEntityAt(entityTile.x, entityTile.y)
+            if (!!entity) {
+                console.log("Result: " + entity.text)
+            }
         }
 
         function attackActionPlayer(data) {

@@ -30,7 +30,8 @@
        inventoryTable = document.getElementById("inventoryTable");
        canvas = document.getElementById("gameCanvas");
        ctx = canvas.getContext("2d");
-       canvas.width = 512;
+       ctx.imageSmoothingEnabled = false;
+       canvas.width = 768;
        canvas.height = 512;
        keys = new Keys();
        world = new World();
@@ -132,7 +133,6 @@
        console.log("Player Removed: " + data.id);
        var lis = playerList.getElementsByTagName("li");
        for (var i = lis.length - 1; i >= 0; i--) {
-           console.log(lis[i].textContent)
            if (lis[i].textContent == data.id) {
                lis[i].remove()
            }
@@ -168,55 +168,60 @@
     ** GAME UPDATE
     **************************************************/
    //
-   function moveLeft() {
-       if (world.getTile(0, localPlayer.getX() - 1, localPlayer.getY()) == 1) {
-           return
-       }
-       if (localPlayer.getCanMove()) {
-           var newX = localPlayer.getX()
-           localPlayer.setCanMove(false);
-           newX -= 1
-           localPlayer.setX(newX)
-           setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
-       }
-   }
-
-   function moveRight() {
-       if (world.getTile(0, localPlayer.getX() + 1, localPlayer.getY()) == 1) {
-           return
-       }
-       if (localPlayer.getCanMove()) {
-           var newX = localPlayer.getX()
-           localPlayer.setCanMove(false);
-           newX += 1
-           localPlayer.setX(newX)
-           setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
-       }
-   }
-
-   function moveUp() {
-       if (world.getTile(0, localPlayer.getX(), localPlayer.getY() - 1) == 1) {
-           return
-       }
-       if (localPlayer.getCanMove()) {
-           var newY = localPlayer.getY()
-           localPlayer.setCanMove(false);
-           newY -= 1
-           localPlayer.setY(newY)
-           setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
-       }
-   }
-
-   function moveDown() {
-       if (world.getTile(0, localPlayer.getX(), localPlayer.getY() + 1) == 1) {
-           return
-       }
-       if (localPlayer.getCanMove()) {
-           var newY = localPlayer.getY()
-           localPlayer.setCanMove(false);
-           newY += 1
-           localPlayer.setY(newY)
-           setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
+   function move(dir) {
+       switch (dir) {
+           case "left":
+               var entity = world.getEntityAt(localPlayer.getX() - 1, localPlayer.getY())
+               if (!!entity && entity.canMove == false) {
+                   return
+               }
+               if (localPlayer.getCanMove()) {
+                   var newX = localPlayer.getX()
+                   localPlayer.setCanMove(false);
+                   newX -= 1
+                   localPlayer.setX(newX)
+                   setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
+               }
+               break;
+           case "right":
+               var entity = world.getEntityAt(localPlayer.getX() + 1, localPlayer.getY())
+               if (!!entity && entity.canMove == false) {
+                   return
+               }
+               if (localPlayer.getCanMove()) {
+                   var newX = localPlayer.getX()
+                   localPlayer.setCanMove(false);
+                   newX += 1
+                   localPlayer.setX(newX)
+                   setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
+               }
+               break;
+           case "up":
+               var entity = world.getEntityAt(localPlayer.getX(), localPlayer.getY() - 1)
+               if (!!entity && entity.canMove == false) {
+                   return
+               }
+               if (localPlayer.getCanMove()) {
+                   var newY = localPlayer.getY()
+                   localPlayer.setCanMove(false);
+                   newY -= 1
+                   localPlayer.setY(newY)
+                   setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
+               }
+               break;
+           case "down":
+               var entity = world.getEntityAt(localPlayer.getX(), localPlayer.getY() + 1)
+               if (!!entity && entity.canMove == false) {
+                   return
+               }
+               if (localPlayer.getCanMove()) {
+                   var newY = localPlayer.getY()
+                   localPlayer.setCanMove(false);
+                   newY += 1
+                   localPlayer.setY(newY)
+                   setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
+               }
+               break;
        }
    }
 
@@ -229,25 +234,24 @@
    }
 
    function update() {
-       // console.log((localPlayer.getX()) + " | " + (localPlayer.getY()))
        var prevX = localPlayer.getX();
        var prevY = localPlayer.getY();
        //
        if (keys.up & !keys.down) {
-           moveUp()
+           move("up")
            localPlayer.setDir("up")
        }
        if (!keys.up & keys.down) {
-           moveDown()
+           move("down")
            localPlayer.setDir("down")
        }
        //
        if (keys.left & !keys.right) {
-           moveLeft();
+           move("left")
            localPlayer.setDir("left")
        }
        if (!keys.left & keys.right) {
-           moveRight();
+           move("right")
            localPlayer.setDir("right")
        };
        if (keys.z) {
@@ -271,28 +275,49 @@
     **************************************************/
    function draw() {
        ctx.clearRect(0, 0, canvas.width, canvas.height);
-       for (var x = 0; x <= world.getWorldWidth(); x++) {
-           for (var y = 0; y <= world.getWorldHeight(); y++) {
-               ctx.drawImage(tiles, world.getTile(1, x, y) * world.getTileSize(), 0, world.getTileSize(), world.getTileSize(), x * world.getTileSize(), y * world.getTileSize(), world.getTileSize(), world.getTileSize());
+       //
+       var xCoord = localPlayer.getX()
+       var yCoord = localPlayer.getY()
+           //Draw Textures
+       for (var x = 0; x < world.getWorldWidth(); x++) {
+           for (var y = 0; y < world.getWorldHeight(); y++) {
+               ctx.drawImage(tiles, world.getTile(0, x, y) * world.getTileSize(), 0, world.getTileSize(), world.getTileSize(), x * world.getTileSize(), y * world.getTileSize(), world.getTileSize(), world.getTileSize());
            }
        }
-       for (var x = 0; x <= world.getWorldWidth(); x++) {
-           for (var y = 0; y <= world.getWorldHeight(); y++) {
-               ctx.drawImage(objects, world.getTile(2, x, y) * world.getTileSize(), 0, world.getTileSize(), world.getTileSize(), x * world.getTileSize(), y * world.getTileSize(), world.getTileSize(), world.getTileSize());
+       //Draw Overlays/Entities
+       for (var x = 0; x < world.getWorldWidth(); x++) {
+           for (var y = 0; y < world.getWorldHeight(); y++) {
+               if (world.getTile(1, x, y) != 0) {
+                   ctx.drawImage(objects, world.getTile(1, x, y) * world.getTileSize(), 0, world.getTileSize(), world.getTileSize(), x * world.getTileSize(), y * world.getTileSize(), world.getTileSize(), world.getTileSize());
+               }
            }
        }
+       //CAMERA.
+       ctx.setTransform(1, 0, 0, 1, 0, 0);
+       var camx = (32 * xCoord - ((canvas.width) / 2))
+       var camy = (32 * yCoord - ((canvas.height) / 2))
+       var endBoundX = (world.getWorldWidth() * 32) - canvas.width
+       var endBoundY = (world.getWorldHeight() * 32) - canvas.height
+       if (camx >= endBoundX) { camx = endBoundX }
+       if (camy >= endBoundY) { camy = endBoundY }
+       if (camy <= 0) { camy = 0 }
+       if (camx <= 0) { camx = 0 }
+       ctx.translate(-camx, -camy);
        // Draw the remote players
        for (var i = 0; i < remotePlayers.length; i++) {
-        drawPlayer(remotePlayers[i],ctx)
-           // remotePlayers[i].draw(ctx);
+           drawPlayer(remotePlayers[i], ctx)
        };
        // Draw the local player
-       drawPlayer(localPlayer,ctx)
-       // localPlayer.draw(ctx);
+       drawPlayer(localPlayer, ctx)
    };
    /**************************************************
     ** GAME HELPER FUNCTIONS
     **************************************************/
+   function clamp(value, min, max) {
+       if (value < min) return min;
+       else if (value > max) return max;
+       return value;
+   }
    // Find player by ID
    function playerById(id) {
        var i;

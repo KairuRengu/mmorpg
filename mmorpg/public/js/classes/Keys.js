@@ -10,7 +10,7 @@ var Keys = function(up, left, right, down, z, x) {
         x = x || false;
     var onKeyDown = function(e) {
         var that = this
-            // c = e.keyCode;
+        e.preventDefault();
         switch (e.keyCode) {
             // Controls
             case 37: // Left
@@ -35,7 +35,6 @@ var Keys = function(up, left, right, down, z, x) {
     };
     var onKeyUp = function(e) {
         var that = this
-            // c = e.keyCode;
         switch (e.keyCode) {
             case 37: // Left
                 that.left = false;
