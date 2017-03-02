@@ -1,24 +1,28 @@
 Player = require("../classes/Player").Player;
 var DB = require('../../../models/models');
 //////////////////////////////////////////////////////////////////////////////////////////
-module.exports = function(app, UUID, socket, World) {
+module.exports = function(app, UUID, socket, Worlds) {
+
         socket.sockets.on('connection', function(client) {
+			
             DB.User.findOne({}, { 'user.password': 0 }, function(err, user) {
                 //
                 client.userid = UUID() // client.userid = user._id;
                 var newPlayer = new Player(client.userid);
                 newPlayer.setX(user.player.xCoord)
                 newPlayer.setY(user.player.yCoord)
-                    //
-                World.addWorldPlayer(newPlayer);
+                newPlayer.setWorld(user.player.world)
+                Worlds.addWorldPlayer(newPlayer);
+                // console.log(Worlds)
                 console.log('\r\nPlayer Connected: ' + client.userid);
                 console.log('Player Location: ' + newPlayer.getX() + "," + newPlayer.getY());
-                console.log("Loading Map: " + World.getWorldName() + ", Size: " + World.getWorldWidth() + "," + World.getWorldHeight())
-                    //
-                client.emit('getUserDataClient', { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY(), userEquipt: user.player.equipt, userInventory: user.player.inventory });
-                socket.emit("newPlayerClient", { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY() });
-                setEventHandlers(client);
-                console.log("Current Players: " + JSON.stringify(World.getWorldPlayers()))
+                console.log("Player World: " + newPlayer.getWorld())
+                //     //
+                // client.emit('getUserDataClient', { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY(), userEquipt: user.player.equipt, userInventory: user.player.inventory});
+                // socket.emit("newPlayerClient", { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY() });
+                // setEventHandlers(client);
+                // console.log("Current Players: " + JSON.stringify(World.getWorldPlayers()))
+                
             })
         });
 

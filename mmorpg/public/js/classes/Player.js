@@ -8,6 +8,7 @@ var Player = function(id) {
     var canMove = true
     var equipt = []
     var inventory = []
+    var world = ""
         // Getters and setters
     var getX = function() {
         return x;
@@ -57,6 +58,12 @@ var Player = function(id) {
     var setY = function(newY) {
         y = newY;
     };
+    var setWorld = function(worldName) {
+        world = worldName;
+    };
+    var getWorld = function() {
+        return world;
+    };
     // Define which variables and methods can be accessed
     return {
         getX: getX,
@@ -75,10 +82,11 @@ var Player = function(id) {
         setEquipt: setEquipt,
         getEquipt: getEquipt,
         setInventory: setInventory,
-        getInventory: getInventory
+        getInventory: getInventory,
+        setWorld: setWorld,
+        getWorld: getWorld
     }
 };
 try {
     exports.Player = Player;
 } catch (err) {}
-

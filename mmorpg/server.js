@@ -17,17 +17,32 @@
     var socket = io.listen(server);
     console.log("Socket.IO Server Started");
     console.log("===========================================Loading Worlds");
-    var World = require("./public/js/classes/World").World();
-    console.log("===========================================Starting Game Engine");
-    require('./public/js/engine/serverEngine')(app, UUID, socket, World);
-    console.log("Game Engine Started");
-    console.log("===========================================Serving Static Files");
-    app.get('/', function(req, res) {
-        res.sendFile('index.html');
-    });
-    app.get('/*', function(req, res, next) {
-        var file = req.params[0];
-        res.sendFile(__dirname + '/' + file);
-    });
-    console.log("Files Served");
-    console.log("===========================================Ready For Users");
+    var fs = require('fs');
+    var Worlds = require("./public/js/classes/Worlds").Worlds();
+    loadMap(function() {
+        console.log("===========================================Starting Game Engine");
+        require('./public/js/engine/serverEngine')(app, UUID, socket, Worlds);
+        console.log("Game Engine Started");
+        console.log("===========================================Serving Static Files");
+        app.get('/', function(req, res) {
+            res.sendFile('index.html');
+        });
+        app.get('/*', function(req, res, next) {
+            var file = req.params[0];
+            res.sendFile(__dirname + '/' + file);
+        });
+        console.log("Files Served");
+        console.log("===========================================Ready For Users");
+    })
+
+    function loadMap(callback) {
+        var worldData = []
+        fs.readdir("./public/worlds", (err, files) => {
+            files.forEach(file => {
+                var currentWorld = JSON.parse(fs.readFileSync('./public/worlds/' + file, 'utf8'));
+                console.log("Loaded " + currentWorld.worldName)
+                Worlds.addWorld(currentWorld);
+            });
+            callback()
+        })
+    }

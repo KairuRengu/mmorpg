@@ -1,0 +1,35 @@
+{
+ 	"worldName": "House",
+ 	"players": [],
+ 	"worldWidth": 5,
+ 	"worldHeight": 5,
+ 	"tileSize": 32,
+ 	"textureLayer": [
+ 		1, 1, 1, 1, 1, 
+ 		1, 0, 0, 0, 1, 
+ 		1, 0, 0, 0, 1, 
+ 		1, 0, 0, 1, 1, 
+ 		1, 1, 1, 1, 1
+ 		
+ 	],
+ 	"actionLayer": [
+ 		1, 1, 1, 1, 1, 
+ 		1, 0, 0, 0, 1, 
+ 		1, 0, 0, 0, 1, 
+ 		1, 0, 0, 2, 1, 
+ 		1, 1, 1, 1, 1
+ 	],
+ 	"entities": [{
+ 		"index": 1,
+ 		"name": "Shrub",
+ 		"text": "This Is A Shrub",
+ 		"tile": 1,
+ 		"canMove": false
+ 	}, {
+ 		"index": 2,
+ 		"name": "Box",
+ 		"text": "This Is A Box",
+ 		"tile": 2,
+ 		"canMove": false
+ 	}]
+ }
