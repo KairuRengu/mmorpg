@@ -272,18 +272,16 @@
        if ((prevX != localPlayer.getX() || prevY != localPlayer.getY()) ? true : false) {
            socket.emit("actionPlayerServer", { action: 'move', player: localPlayer.getSerializedPlayer() });
        };
-       // if (keys.z) {
-       //     if (localPlayer.getCanAction()) {
-       //         console.log("ATTACK")
-       //         socket.emit("actionPlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir(), action: 'attack' });
-       //         localPlayer.setCanAction(false);
-       //         setTimeout(function() { actionReset() }, 300);
-       //     }
-       // };
-       // if (keys.x) {
-       //     console.log("USE")
-       //     socket.emit("actionPlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir(), action: 'use' });
-       // };
+       if (keys.z) {
+           if (localPlayer.getCanAction()) {
+               socket.emit("actionPlayerServer", { action: 'attack', player: localPlayer.getSerializedPlayer() });
+               localPlayer.setCanAction(false);
+               setTimeout(function() { actionReset() }, 300);
+           }
+       };
+       if (keys.x) {
+           socket.emit("actionPlayerServer", { action: 'use', player: localPlayer.getSerializedPlayer() });
+       };
    };
    /**************************************************
     ** GAME DRAW
@@ -320,7 +318,6 @@
        ctx.translate(-camx, -camy);
        // Draw the remote players
        for (var i = 0; i < remotePlayers.length; i++) {
-       	console.log(remotePlayers[i].getDir())
            drawPlayer(remotePlayers[i], ctx)
        };
        // Draw the local player

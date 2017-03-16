@@ -1,16 +1,30 @@
 var Zones = function() {
     var zones = []
     var players = []
+    var entities = []
         //
     function getZones() {
         return zones
+    };
+        function getZone(zoneName) {
+         for (var i = 0; i < zones.length; i++) {
+            if (zones[i].getName() == zoneName) return zones[i];
+        };
+        return false;
     };
 
     function addZone(zone) {
         zones.push(zone)
         return
     };
-
+    function userIsOnline(id){
+        for (var i = players.length - 1; i >= 0; i--) {
+            if(id == players[i].getID()){
+                return true
+            }
+        }
+        return false
+    }
     function getPlayers() {
         return players
     };
@@ -27,6 +41,8 @@ var Zones = function() {
         return false;
     };
     return {
+        userIsOnline:userIsOnline,
+        getZone:getZone,
         getZones: getZones,
         addZone: addZone,
         addPlayer: addPlayer,

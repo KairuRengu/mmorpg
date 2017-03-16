@@ -11,6 +11,10 @@ var Zone = function(name, width, height, textureMap, actionMap, entities) {
         return name
     };
 
+    function setActionMap(aMap) {
+        actionMap = aMap
+    };
+
     function getSerializedZone() {
         return { name: name, textureMap: textureMap, actionMap: actionMap, entities: entities, width: width, height: height }
     };
@@ -36,9 +40,25 @@ var Zone = function(name, width, height, textureMap, actionMap, entities) {
                 return entities[i]
             }
         }
-        return { canMove: true }
+        return false
+    }
+    var getCoordTileAdj = function(x, y, dir) {
+        if (dir == "up") {
+            return { y: (y - 1), x: x };
+        }
+        if (dir == "down") {
+            return { y: (y + 1), x: x };
+        }
+        if (dir == "left") {
+            return { y: y, x: (x - 1) };
+        }
+        if (dir == "right") {
+            return { y: y, x: (x + 1) };
+        }
     }
     return {
+        setActionMap: setActionMap,
+        getCoordTileAdj: getCoordTileAdj,
         getName: getName,
         getWidth: getWidth,
         getHeight: getHeight,

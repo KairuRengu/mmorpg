@@ -60,7 +60,7 @@ function windowLoaded() {
     });
     socket.on("loginResponse", function(data) {
         if (data.status == true) {
-            alert("Login Success")
+            // alert("Login Success")
             document.getElementById("loginPanel").style.display = "none";
             document.getElementById("gamePanel").style.display = "initial";
             init(data);

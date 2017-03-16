@@ -15,16 +15,12 @@ module.exports = function(app, UUID, socket, Zones) {
             var client = this
             DB.User.findOne({ 'user.email': data.email }, function(err, user) {
                 if (user && (user.user.password == data.password)) {
+                    if (Zones.userIsOnline(user._id.toString())) {
+                        client.emit("loginResponse", { status: false, message: "Player Already Logged In!" })
+                        return
+                    }
                     client.userid = user._id
-                        //
-                        // var removePlayer = Zones.getPlayerById(client.userid);
-                        // console.log(removePlayer)
-                        // if (!!removePlayer) {
-                        //     client.emit("loginResponse", { status: false, message: "Player Already Logged In!" })
-                        //     return
-                        // }
-                        //
-                    console.log('\r\nPlayer Connected');
+                    console.log('\r\nAuthenticated Player Connected');
                     var newPlayer = new Player(client.userid);
                     newPlayer.setName(user.player.name)
                     newPlayer.setX(user.player.xCoord)
@@ -40,7 +36,7 @@ module.exports = function(app, UUID, socket, Zones) {
                     console.log('Player Location: ' + newPlayer.getX() + "," + newPlayer.getY());
                     console.log("Player added to Zone: " + newPlayer.getZone())
                     client.emit("loginResponse", { status: true, id: newPlayer.getID(), player: user.player, zone: Zones.getZones()[0].getSerializedZone() })
-                    socket.emit("newPlayerClient", newPlayer.getSerializedPlayer() );
+                    socket.emit("newPlayerClient", newPlayer.getSerializedPlayer());
                     console.log("----")
                     console.log("Current Players: " + Zones.getPlayers().length)
                 } else {
@@ -87,16 +83,16 @@ module.exports = function(app, UUID, socket, Zones) {
                     // Broadcast updated position to connected socket clients
                     this.broadcast.emit("actionPlayerClient", { action: 'move', player: actionPlayer.getSerializedPlayer() });
                     break;
+                        case "use":
+                          var playerZone = Zones.getZone(data.player.zone)
+                                var entityTile = playerZone.getCoordTileAdj(actionPlayer.getX(), actionPlayer.getY(), actionPlayer.getDir())
+                                var entity = playerZone.getEntityAt(entityTile.x, entityTile.y)
+                                if (!!entity) {
+                                    console.log("Result: " + entity.text)
+                                }
+                            break;
                     //     case "attack":
                     //         console.log("attack")
-                    //             // var entityTile = Zone.getCoordTileAdj(actionPlayer.getX(), actionPlayer.getY(), actionPlayer.getDir())
-                    //             // var entity = World.getEntityAt(entityTile.x, entityTile.y)
-                    //             // if (!!entity) {
-                    //             //     console.log("Result: " + entity.text)
-                    //             // }
-                    //         break;
-                    //     case "use":
-                    //         console.log("use")
                     //         break;
             }
         }
