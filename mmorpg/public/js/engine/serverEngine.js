@@ -17,8 +17,17 @@ module.exports = function(app, UUID, socket, Zones) {
             var client = this
             DB.User.findOne({ 'user.email': data.email }, { 'user.password': 0 }, function(err, user) {
                 if (user) {
+                	client.userid = user._id
+                    //
+                    // var removePlayer = Zones.getPlayerById(client.userid);
+                    // console.log(removePlayer)
+                    // if (!!removePlayer) {
+                    //     client.emit("loginResponse", { status: false, message: "Player Already Logged In!" })
+                    //     return
+                    // }
+                    //
                     console.log('\r\nPlayer Connected');
-                    client.userid = user._id
+                    
                     var newPlayer = new Player(client.userid);
                     newPlayer.setName(user.player.name)
                     newPlayer.setX(user.player.xCoord)
@@ -39,7 +48,7 @@ module.exports = function(app, UUID, socket, Zones) {
                     console.log("Current Players: " + Zones.getPlayers().length)
                 } else {
                     console.log("Failed To Authenticate User: " + client.userid)
-                    client.emit("loginResponse", { status: false })
+                    client.emit("loginResponse", { status: false, message: "Invalid Credentials!" })
                 }
             })
         }

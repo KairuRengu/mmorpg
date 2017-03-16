@@ -65,7 +65,7 @@ function windowLoaded() {
             document.getElementById("gamePanel").style.display = "initial";
             init(data);
         } else {
-            alert("Login Failed")
+            alert("Login Failed\r\n" + data.message)
             document.getElementById("loginPanel").style.display = "initial";
             document.getElementById("gamePanel").style.display = "none";
         }
@@ -80,18 +80,20 @@ function login() {
         password: password
     });
 }
+
 function login1() {
-	socket.emit("login", {
+    socket.emit("login", {
         email: 'test@test.com',
         password: 'test'
     });
-	}
+}
+
 function login2() {
-	socket.emit("login", {
+    socket.emit("login", {
         email: 'test2@test.com',
         password: 'test2'
     });
-	}
+}
 window.onload = windowLoaded;
 </script>
 <style type="text/css">
