@@ -3,12 +3,95 @@
 
 <head>
     <title> Real time multi-player games with HTML5</title>
-            <link rel="stylesheet" href="css/reset.css">
-        <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <script type="text/javascript" src="/js/vendor/socket.io.js"></script>
 </head>
 
 <body>
-Click To Play <a href="/game.html">Here</a>
+    <br>
+    <div class="container" id="loginPanel">
+        <div class="row">
+            <div class="col-md-4 col-md-offset-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Jankscape</h3> </div>
+                    <div class="panel-body">
+                        <form role="form">
+                            <fieldset>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Email" id="email" type="email" value="test@test.com" autofocus> </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Password" id="password" type="password" value="test"> </div>
+                                <button type="button" class="btn btn-success btn-block" onclick="login()">Login</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="gamePanel" style="display: none; ">
+        <canvas id="gameCanvas"></canvas>
+        <script src="js/classes/Keys.js"></script>
+        <script src="js/classes/DrawPlayer.js"></script>
+        <script src="js/classes/Player.js"></script>
+        <script src="js/classes/Zone.js"></script>
+        <script src="/js/engine/clientEngine.js"></script>
+        <br>
+        <hr> Equipt:
+        <table id="equiptTable" style=""> </table>
+        <hr> Inventory:
+        <table id="inventoryTable"> </table>
+        <hr> Players:
+        <ul id="playerList"> </ul>
+        <hr> Console:
+        <ul id="consoleList"> </ul>
+    </div>
 </body>
+<script type="text/javascript">
+var socket;
+
+function windowLoaded() {
+    socket = io.connect('/', {
+        transports: ["websocket"]
+    });
+    socket.on("loginResponse", function(data) {
+        if (data.status == true) {
+            alert("Login Success")
+                // console.log(JSON.stringify(data.player))
+            document.getElementById("loginPanel").style.display = "none";
+            document.getElementById("gamePanel").style.display = "initial";
+            init();
+        } else {
+            alert("Login Failed")
+            document.getElementById("loginPanel").style.display = "initial";
+            document.getElementById("gamePanel").style.display = "none";
+        }
+    });
+}
+
+function login() {
+    var email = document.getElementById("email").value
+    var password = document.getElementById("password").value
+    socket.emit("playerLogin", {
+        email: email,
+        password: password
+    });
+}
+window.onload = windowLoaded;
+</script>
+<style type="text/css">
+body {
+    background-image: url('./assets/background.jpg');
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    z-index: -1;
+    color: white;
+}
+</style>
 
 </html>

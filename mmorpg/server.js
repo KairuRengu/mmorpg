@@ -17,11 +17,13 @@
     var socket = io.listen(server);
     console.log("Socket.IO Server Started");
     console.log("===========================================Loading Worlds");
+    var Zone = require("./public/js/classes/Zone.js");
+    var Zones = require("./public/js/classes/Zones.js");
+    var Zones = new Zones();
     var fs = require('fs');
-    var Worlds = require("./public/js/classes/Worlds").Worlds();
     loadMap(function() {
         console.log("===========================================Starting Game Engine");
-        require('./public/js/engine/serverEngine')(app, UUID, socket, Worlds);
+        require('./public/js/engine/serverEngine')(app, UUID, socket, Zones);
         console.log("Game Engine Started");
         console.log("===========================================Serving Static Files");
         app.get('/', function(req, res) {
@@ -32,16 +34,16 @@
             res.sendFile(__dirname + '/' + file);
         });
         console.log("Files Served");
-        console.log("===========================================Ready For Users");
+        console.log("===========================================Ready For Users\r\n");
     })
 
     function loadMap(callback) {
-        var worldData = []
-        fs.readdir("./public/worlds", (err, files) => {
+        fs.readdir("./public/zones", (err, files) => {
             files.forEach(file => {
-                var currentWorld = JSON.parse(fs.readFileSync('./public/worlds/' + file, 'utf8'));
-                console.log("Loaded " + currentWorld.worldName)
-                Worlds.addWorld(currentWorld);
+                var currentZone = JSON.parse(fs.readFileSync('./public/zones/' + file, 'utf8'));
+                var newZone = new Zone(currentZone.name,currentZone.width,currentZone.height,currentZone.textureMap)
+                Zones.addZone(newZone)
+                console.log("Loaded [ " + newZone.getName() + " ]")
             });
             callback()
         })

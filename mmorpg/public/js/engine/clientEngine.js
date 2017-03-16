@@ -23,7 +23,7 @@
    })();
 
    function init() {
-       socket = io.connect('/', { transports: ["websocket"] });
+       console.log("Starting Engine")
        playerList = document.getElementById("playerList");
        consoleList = document.getElementById("consoleList");
        equiptTable = document.getElementById("equiptTable");
@@ -34,10 +34,12 @@
        canvas.width = 768;
        canvas.height = 512;
        keys = new Keys();
-       world = new World();
+       Zone = Zone();
        remotePlayers = [];
        localPlayer = [];
-       setEventHandlers();
+       ctx.font = "70px Arial";
+       ctx.fillText("Loading.....", 50, 50);
+       // setEventHandlers();
    }
    //////////////////////////////////////////////////////////////////////////////////////
    function setEventHandlers() {

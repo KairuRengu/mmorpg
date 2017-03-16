@@ -1,4 +1,5 @@
-var Player = function(id) {
+var Player = function(id, name) {
+    var name = name
     var x = 0
     var y = 0
     var direction = "down"
@@ -10,6 +11,9 @@ var Player = function(id) {
     var inventory = []
     var world = ""
         // Getters and setters
+    var getName = function() {
+        return name;
+    };
     var getX = function() {
         return x;
     };
@@ -66,6 +70,7 @@ var Player = function(id) {
     };
     // Define which variables and methods can be accessed
     return {
+        getName:getName,
         getX: getX,
         getY: getY,
         setX: setX,
