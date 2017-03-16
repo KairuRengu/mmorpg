@@ -20,10 +20,12 @@
                         <form role="form">
                             <fieldset>
                                 <div class="form-group">
-                                    <input class="form-control" placeholder="Email" id="email" type="email" value="test@test.com" autofocus> </div>
+                                    <input class="form-control" placeholder="Email" id="email" type="email" value="" autofocus> </div>
                                 <div class="form-group">
-                                    <input class="form-control" placeholder="Password" id="password" type="password" value="test"> </div>
+                                    <input class="form-control" placeholder="Password" id="password" type="password" value=""> </div>
                                 <button type="button" class="btn btn-success btn-block" onclick="login()">Login</button>
+                                <button type="button" class="btn btn-warning btn-block" onclick="login1()">Login Test User 1</button>
+                                <button type="button" class="btn btn-danger btn-block" onclick="login2()">Login Test User2</button>
                             </fieldset>
                         </form>
                     </div>
@@ -78,6 +80,18 @@ function login() {
         password: password
     });
 }
+function login1() {
+	socket.emit("login", {
+        email: 'test@test.com',
+        password: 'test'
+    });
+	}
+function login2() {
+	socket.emit("login", {
+        email: 'test2@test.com',
+        password: 'test2'
+    });
+	}
 window.onload = windowLoaded;
 </script>
 <style type="text/css">

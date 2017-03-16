@@ -8,7 +8,7 @@ module.exports = function(app, UUID, socket, Zones) {
             client.on("login", playerLogin);
             client.on("disconnect", disconnectPlayer);
             client.on("getPlayersServer", getPlayers);
-            // client.on("actionPlayerServer", actionPlayer);
+            client.on("actionPlayerServer", actionPlayer);
             // client.on("useActionPlayerServer", useActionPlayer);
             // client.on("attackActionPlayerServer", attackActionPlayer);
         });
@@ -85,19 +85,21 @@ module.exports = function(app, UUID, socket, Zones) {
         }
 
         function actionPlayer(data) {
-            if (data.action == "move") {
-                var movePlayer = Zones.getPlayerById(data.id);
-                if (!movePlayer) {
-                    console.log("Move | Player not found: " + data.id);
-                    return;
-                };
-                console.log("player moving " + data.id )
-                // Update player position
-                movePlayer.setX(data.x);
-                movePlayer.setY(data.y);
-                movePlayer.setDir(data.dir);
-                // Broadcast updated position to connected socket clients
-                this.broadcast.emit("actionPlayerClient", { id: movePlayer.getID(), x: movePlayer.getX(), y: movePlayer.getY(), dir: movePlayer.getDir(), action: "move" });
+            var actionPlayer = Zones.getPlayerById(data.id);
+            // Player not found
+            if (!actionPlayer) {
+                console.log("Player not found: " + data.id);
+                return;
+            };
+            switch (data.action) {
+                case "move":
+                    // Update player position
+                    actionPlayer.setX(data.x);
+                    actionPlayer.setY(data.y);
+                    actionPlayer.setDir(data.dir);
+                    // Broadcast updated position to connected socket clients
+                    this.broadcast.emit("actionPlayerClient", { id: actionPlayer.getID(), x: actionPlayer.getX(), y: actionPlayer.getY(), dir: actionPlayer.getDir(), action: "move" });
+                    break;
             }
         }
     }

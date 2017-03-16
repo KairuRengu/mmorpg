@@ -128,24 +128,23 @@
    };
 
    function actionPlayer(data) {
-   	console.log("player trying tp movg " + data.id )
-       if (data.action == "move") {
-       	console.log("player moving " + data.id )
-           var movePlayer = playerById(data.id);
-           // Player not found
-           if (!movePlayer) {
-               console.log("Player not found: " + data.id);
-               return;
-           };
-           // Player not found in Zone
-           if (movePlayer.getZone() != localPlayer.getZone()) {
-               console.log("Player not in this Zone: " + data.id);
-               return;
-           };
-           // Update player position
-           movePlayer.setX(data.x);
-           movePlayer.setY(data.y);
-           movePlayer.setDir(data.dir);
+       var actionPlayer = getPlayerById(data.id);
+       // Player not found
+       if (!actionPlayer) {
+           console.log("Player not found: " + data.id);
+           return;
+       };
+       // Player not found in Zone
+       if (actionPlayer.getZone() != localPlayer.getZone()) {
+           console.log("Player not in this Zone: " + data.id);
+           return;
+       };
+       switch (data.action) {
+           case "move":
+               actionPlayer.setX(data.x);
+               actionPlayer.setY(data.y);
+               actionPlayer.setDir(data.dir);
+               break;
        }
    };
 
@@ -157,7 +156,7 @@
                lis[i].remove()
            }
        }
-       var removePlayer = playerById(data.id);
+       var removePlayer = getPlayerById(data.id);
        // Player not found
        if (!removePlayer) {
            console.log("Player not found: " + data.id);
@@ -337,7 +336,7 @@
        return value;
    }
    // Find player by ID
-   function playerById(id) {
+   function getPlayerById(id) {
        for (var i = 0; i < remotePlayers.length; i++) {
            if (remotePlayers[i].getID() == id) return remotePlayers[i];
        };
