@@ -31,7 +31,7 @@
        canvas = document.getElementById("gameCanvas");
        ctx = canvas.getContext("2d");
        ctx.imageSmoothingEnabled = false;
-       canvas.width = 768;
+       canvas.width = 512;
        canvas.height = 512;
        keys = new Keys();
        remotePlayers = [];
@@ -128,22 +128,20 @@
    };
 
    function actionPlayer(data) {
-       var actionPlayer = getPlayerById(data.id);
+       var actionPlayer = getPlayerById(data.player.id);
        // Player not found
        if (!actionPlayer) {
-           console.log("Player not found: " + data.id);
+           console.log("Player not found: " + data.player.id);
            return;
        };
        // Player not found in Zone
        if (actionPlayer.getZone() != localPlayer.getZone()) {
-           console.log("Player not in this Zone: " + data.id);
+           console.log("Player not in this Zone: " + data.player.id);
            return;
        };
        switch (data.action) {
            case "move":
-               actionPlayer.setX(data.x);
-               actionPlayer.setY(data.y);
-               actionPlayer.setDir(data.dir);
+               actionPlayer.setSerializedPlayer(data.player);
                break;
        }
    };
@@ -271,21 +269,21 @@
            move("right")
            localPlayer.setDir("right")
        };
-       if (keys.z) {
-           if (localPlayer.getCanAction()) {
-               console.log("ATTACK")
-               socket.emit("movePlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir(), action: 'attack' });
-               localPlayer.setCanAction(false);
-               setTimeout(function() { actionReset() }, 300);
-           }
-       };
-       if (keys.x) {
-           console.log("USE")
-           socket.emit("movePlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir(), action: 'use' });
-       };
        if ((prevX != localPlayer.getX() || prevY != localPlayer.getY()) ? true : false) {
-           socket.emit("actionPlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir(), action: 'move' });
+           socket.emit("actionPlayerServer", { action: 'move', player: localPlayer.getSerializedPlayer() });
        };
+       // if (keys.z) {
+       //     if (localPlayer.getCanAction()) {
+       //         console.log("ATTACK")
+       //         socket.emit("actionPlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir(), action: 'attack' });
+       //         localPlayer.setCanAction(false);
+       //         setTimeout(function() { actionReset() }, 300);
+       //     }
+       // };
+       // if (keys.x) {
+       //     console.log("USE")
+       //     socket.emit("actionPlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir(), action: 'use' });
+       // };
    };
    /**************************************************
     ** GAME DRAW
@@ -322,6 +320,7 @@
        ctx.translate(-camx, -camy);
        // Draw the remote players
        for (var i = 0; i < remotePlayers.length; i++) {
+       	console.log(remotePlayers[i].getDir())
            drawPlayer(remotePlayers[i], ctx)
        };
        // Draw the local player

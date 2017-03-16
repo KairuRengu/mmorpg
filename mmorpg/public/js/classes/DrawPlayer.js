@@ -6,12 +6,12 @@
         var canAction = player.getCanAction()
         var direction = player.getDir()
         ctx.fillStyle = "#000000";
-        ctx.fillText(player.getName(), xCoord , yCoord+48);
+        ctx.fillText(player.getName(), xCoord, yCoord + 48);
         ctx.fillStyle = "#FF0000";
-ctx.fillRect(xCoord,yCoord-6,32,4);
-ctx.fillStyle = "#00FF00";
-var healthBar = Math.floor(32*(player.getHealth()/100))
-ctx.fillRect(xCoord,yCoord-6,healthBar,4);
+        ctx.fillRect(xCoord, yCoord - 6, 32, 4);
+        ctx.fillStyle = "#00FF00";
+        var healthBar = Math.floor(32 * (player.getHealth() / 100))
+        ctx.fillRect(xCoord, yCoord - 6, healthBar, 4);
         switch (direction) {
             // Controls
             case "down":

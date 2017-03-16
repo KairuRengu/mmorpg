@@ -14,7 +14,7 @@ var Player = function(id) {
     var mana = 100
         // Getters and setters
     var getSerializedPlayer = function() {
-        var sPlayer = { id: id, name: name, x: x, y: y, zone: zone, health: health, mana: mana }
+        var sPlayer = { id: id, name: name, x: x, y: y, zone: zone, health: health, mana: mana, direction: direction }
         return sPlayer
     }
     var setSerializedPlayer = function(sPlayer) {
@@ -25,6 +25,7 @@ var Player = function(id) {
         zone = sPlayer.zone
         health = sPlayer.health
         mana = sPlayer.mana
+        direction = sPlayer.direction
         return
     }
     var getHealth = function() {

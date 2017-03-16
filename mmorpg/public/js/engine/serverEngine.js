@@ -9,25 +9,22 @@ module.exports = function(app, UUID, socket, Zones) {
             client.on("disconnect", disconnectPlayer);
             client.on("getPlayersServer", getPlayers);
             client.on("actionPlayerServer", actionPlayer);
-            // client.on("useActionPlayerServer", useActionPlayer);
-            // client.on("attackActionPlayerServer", attackActionPlayer);
         });
 
         function playerLogin(data) {
             var client = this
-            DB.User.findOne({ 'user.email': data.email }, { 'user.password': 0 }, function(err, user) {
-                if (user) {
-                	client.userid = user._id
-                    //
-                    // var removePlayer = Zones.getPlayerById(client.userid);
-                    // console.log(removePlayer)
-                    // if (!!removePlayer) {
-                    //     client.emit("loginResponse", { status: false, message: "Player Already Logged In!" })
-                    //     return
-                    // }
-                    //
+            DB.User.findOne({ 'user.email': data.email }, function(err, user) {
+                if (user && (user.user.password == data.password)) {
+                    client.userid = user._id
+                        //
+                        // var removePlayer = Zones.getPlayerById(client.userid);
+                        // console.log(removePlayer)
+                        // if (!!removePlayer) {
+                        //     client.emit("loginResponse", { status: false, message: "Player Already Logged In!" })
+                        //     return
+                        // }
+                        //
                     console.log('\r\nPlayer Connected');
-                    
                     var newPlayer = new Player(client.userid);
                     newPlayer.setName(user.player.name)
                     newPlayer.setX(user.player.xCoord)
@@ -43,7 +40,7 @@ module.exports = function(app, UUID, socket, Zones) {
                     console.log('Player Location: ' + newPlayer.getX() + "," + newPlayer.getY());
                     console.log("Player added to Zone: " + newPlayer.getZone())
                     client.emit("loginResponse", { status: true, id: newPlayer.getID(), player: user.player, zone: Zones.getZones()[0].getSerializedZone() })
-                    socket.emit("newPlayerClient", newPlayer.getSerializedPlayer());
+                    socket.emit("newPlayerClient", newPlayer.getSerializedPlayer() );
                     console.log("----")
                     console.log("Current Players: " + Zones.getPlayers().length)
                 } else {
@@ -52,26 +49,7 @@ module.exports = function(app, UUID, socket, Zones) {
                 }
             })
         }
-        // function useActionPlayer(data) {
-        //     var actionPlayer = World.getPlayerById(data.id);
-        //     if (!actionPlayer) {
-        //         console.log("USE | Player not found: " + data.id);
-        //         return;
-        //     };
-        //     var entityTile = World.getCoordTileAdj(actionPlayer.getX(), actionPlayer.getY(), actionPlayer.getDir())
-        //     var entity = World.getEntityAt(entityTile.x, entityTile.y)
-        //     if (!!entity) {
-        //         console.log("Result: " + entity.text)
-        //     }
-        // }
-        // function attackActionPlayer(data) {
-        //     var actionPlayer = World.getPlayerById(data.id);
-        //     if (!actionPlayer) {
-        //         console.log("ATTACK | Player not found: " + data.id);
-        //         return;
-        //     };
-        //     console.log("Player " + data.id + " pressed ATTACK on coord: " + actionPlayer.getX() + "," + actionPlayer.getY() + " facing " + actionPlayer.getDir())
-        // }
+
         function disconnectPlayer() {
             if (!this.userid) return;
             console.log('Player Disconnected: ' + this.userid);
@@ -94,21 +72,32 @@ module.exports = function(app, UUID, socket, Zones) {
         }
 
         function actionPlayer(data) {
-            var actionPlayer = Zones.getPlayerById(data.id);
+            var actionPlayer = Zones.getPlayerById(data.player.id);
             // Player not found
             if (!actionPlayer) {
-                console.log("Player not found: " + data.id);
+                console.log("Player not found: " + data.player.id);
                 return;
             };
             switch (data.action) {
                 case "move":
                     // Update player position
-                    actionPlayer.setX(data.x);
-                    actionPlayer.setY(data.y);
-                    actionPlayer.setDir(data.dir);
+                    actionPlayer.setX(data.player.x);
+                    actionPlayer.setY(data.player.y);
+                    actionPlayer.setDir(data.player.direction);
                     // Broadcast updated position to connected socket clients
-                    this.broadcast.emit("actionPlayerClient", { id: actionPlayer.getID(), x: actionPlayer.getX(), y: actionPlayer.getY(), dir: actionPlayer.getDir(), action: "move" });
+                    this.broadcast.emit("actionPlayerClient", { action: 'move', player: actionPlayer.getSerializedPlayer() });
                     break;
+                    //     case "attack":
+                    //         console.log("attack")
+                    //             // var entityTile = Zone.getCoordTileAdj(actionPlayer.getX(), actionPlayer.getY(), actionPlayer.getDir())
+                    //             // var entity = World.getEntityAt(entityTile.x, entityTile.y)
+                    //             // if (!!entity) {
+                    //             //     console.log("Result: " + entity.text)
+                    //             // }
+                    //         break;
+                    //     case "use":
+                    //         console.log("use")
+                    //         break;
             }
         }
     }
