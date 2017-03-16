@@ -59,10 +59,9 @@ function windowLoaded() {
     socket.on("loginResponse", function(data) {
         if (data.status == true) {
             alert("Login Success")
-                // console.log(JSON.stringify(data.player))
             document.getElementById("loginPanel").style.display = "none";
             document.getElementById("gamePanel").style.display = "initial";
-            init();
+            init(data);
         } else {
             alert("Login Failed")
             document.getElementById("loginPanel").style.display = "initial";
@@ -74,7 +73,7 @@ function windowLoaded() {
 function login() {
     var email = document.getElementById("email").value
     var password = document.getElementById("password").value
-    socket.emit("playerLogin", {
+    socket.emit("login", {
         email: email,
         password: password
     });

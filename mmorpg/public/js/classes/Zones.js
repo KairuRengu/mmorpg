@@ -22,7 +22,7 @@ var Zones = function() {
     };
     var getPlayerById = function(id) {
         for (var i = 0; i < players.length; i++) {
-            if (players[i].id == id) return players[i];
+            if (players[i].getID() == id) return players[i];
         };
         return false;
     };

@@ -41,7 +41,7 @@
         fs.readdir("./public/zones", (err, files) => {
             files.forEach(file => {
                 var currentZone = JSON.parse(fs.readFileSync('./public/zones/' + file, 'utf8'));
-                var newZone = new Zone(currentZone.name,currentZone.width,currentZone.height,currentZone.textureMap)
+                var newZone = new Zone(currentZone.name,currentZone.width,currentZone.height,currentZone.textureMap,currentZone.actionMap,currentZone.entities)
                 Zones.addZone(newZone)
                 console.log("Loaded [ " + newZone.getName() + " ]")
             });

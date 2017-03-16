@@ -1,18 +1,49 @@
-var Player = function(id, name) {
-    var name = name
+var Player = function(id) {
+    var name = "X"
     var x = 0
     var y = 0
-    var direction = "down"
-    var id = id
-    var moveSpeed = 100
-    var canAction = true
-    var canMove = true
+    var direction = "down" //
+    var id = id //
+    var moveSpeed = 100 //
+    var canAction = true //
+    var canMove = true //
     var equipt = []
     var inventory = []
-    var world = ""
+    var zone = ""
+    var health = 100
+    var mana = 100
         // Getters and setters
+    var getSerializedPlayer = function() {
+        var sPlayer = { id: id, name: name, x: x, y: y, zone: zone, health: health, mana: mana }
+        return sPlayer
+    }
+    var setSerializedPlayer = function(sPlayer) {
+        id = sPlayer.id
+        name = sPlayer.name
+        x = sPlayer.x
+        y = sPlayer.y
+        zone = sPlayer.zone
+        health = sPlayer.health
+        mana = sPlayer.mana
+        return
+    }
+    var getHealth = function() {
+        return health;
+    };
+    var setHealth = function(playerHealth) {
+        health = playerHealth;
+    };
+    var getMana = function() {
+        return mana;
+    };
+    var setMana = function(playerMana) {
+        mana = playerMana;
+    };
     var getName = function() {
         return name;
+    };
+    var setName = function(playerName) {
+        name = playerName;
     };
     var getX = function() {
         return x;
@@ -62,20 +93,24 @@ var Player = function(id, name) {
     var setY = function(newY) {
         y = newY;
     };
-    var setWorld = function(worldName) {
-        world = worldName;
+    var setZone = function(zoneName) {
+        zone = zoneName;
     };
-    var getWorld = function() {
-        return world;
+    var getZone = function() {
+        return zone;
     };
     // Define which variables and methods can be accessed
     return {
-        getName:getName,
+        setHealth: setHealth,
+        getHealth: getHealth,
+        setMana: setMana,
+        getMana: getMana,
+        getName: getName,
+        setName: setName,
         getX: getX,
         getY: getY,
         setX: setX,
         setY: setY,
-        id: id,
         getID: getID,
         setCanMove: setCanMove,
         getCanMove: getCanMove,
@@ -88,8 +123,10 @@ var Player = function(id, name) {
         getEquipt: getEquipt,
         setInventory: setInventory,
         getInventory: getInventory,
-        setWorld: setWorld,
-        getWorld: getWorld
+        setZone: setZone,
+        getZone: getZone,
+        getSerializedPlayer: getSerializedPlayer,
+        setSerializedPlayer: setSerializedPlayer
     }
 };
 try {

@@ -5,7 +5,7 @@
         var yCoord = player.getY() * 32
         var canAction = player.getCanAction()
         var direction = player.getDir()
-        ctx.fillText(player.getID(), xCoord - 40, yCoord);
+        ctx.fillText(player.getName(), xCoord , yCoord);
         switch (direction) {
             // Controls
             case "down":

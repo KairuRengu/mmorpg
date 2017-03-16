@@ -15,7 +15,7 @@ var userSchema = new mongoose.Schema({
             name: { type: String, default: "" },
             xCoord: { type: Number, default: 0 },
             yCoord: { type: Number, default: 0 },
-            world: { type: String, default: "Home" },
+            zone: { type: String, default: "Home" },
  
             health: { type: Number, default: 100 },
             mana: { type: Number, default: 100 },

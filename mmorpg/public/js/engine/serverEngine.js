@@ -4,14 +4,11 @@ var DB = require('../../../models/models');
 //Singleton
 module.exports = function(app, UUID, socket, Zones) {
         socket.sockets.on('connection', function(client) {
-            client.userid = UUID()
-            console.log('Unknown Player Connected: ' + client.userid);
-            // client.emit('getUserDataClient', { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY(), userEquipt: user.player.equipt, userInventory: user.player.inventory});
-            //
-            client.on("playerLogin", playerLogin);
+            console.log('Unknown Player Connected');
+            client.on("login", playerLogin);
             client.on("disconnect", disconnectPlayer);
-            client.on("movePlayerServer", movePlayer);
             client.on("getPlayersServer", getPlayers);
+            // client.on("actionPlayerServer", actionPlayer);
             // client.on("useActionPlayerServer", useActionPlayer);
             // client.on("attackActionPlayerServer", attackActionPlayer);
         });
@@ -20,27 +17,32 @@ module.exports = function(app, UUID, socket, Zones) {
             var client = this
             DB.User.findOne({ 'user.email': data.email }, { 'user.password': 0 }, function(err, user) {
                 if (user) {
-                    console.log('\r\nPlayer Connected: ' + client.userid);
-                        //
-                        console.log(user.player.name)
-                    var newPlayer = new Player(client.userid, user.player.name);
+                    console.log('\r\nPlayer Connected');
+                    client.userid = user._id
+                    var newPlayer = new Player(client.userid);
+                    newPlayer.setName(user.player.name)
                     newPlayer.setX(user.player.xCoord)
                     newPlayer.setY(user.player.yCoord)
-                    newPlayer.setWorld(user.player.world)
+                    newPlayer.setZone(user.player.zone)
+                    newPlayer.setHealth(user.player.health)
+                    newPlayer.setMana(user.player.mana)
+                    newPlayer.setEquipt(user.player.equipt)
+                    newPlayer.setInventory(user.player.inventory)
+                    Zones.addPlayer(newPlayer)
+                    console.log('Player ID: ' + newPlayer.getID());
                     console.log('Player Name: ' + newPlayer.getName());
                     console.log('Player Location: ' + newPlayer.getX() + "," + newPlayer.getY());
-                    Zones.addPlayer(newPlayer)
-					console.log("Player added to Zone: " + newPlayer.getWorld())
-                    socket.emit("newPlayerClient", { id: newPlayer.getID(), x: newPlayer.getX(), y: newPlayer.getY() });
-                    client.emit("loginResponse", { status: true, player: user.player })
-                    console.log("Current Players: " + JSON.stringify(Zones.getPlayers()))
+                    console.log("Player added to Zone: " + newPlayer.getZone())
+                    client.emit("loginResponse", { status: true, id: newPlayer.getID(), player: user.player, zone: Zones.getZones()[0].getSerializedZone() })
+                    socket.emit("newPlayerClient", newPlayer.getSerializedPlayer());
+                    console.log("----")
+                    console.log("Current Players: " + Zones.getPlayers().length)
                 } else {
                     console.log("Failed To Authenticate User: " + client.userid)
                     client.emit("loginResponse", { status: false })
                 }
             })
         }
-
         // function useActionPlayer(data) {
         //     var actionPlayer = World.getPlayerById(data.id);
         //     if (!actionPlayer) {
@@ -53,7 +55,6 @@ module.exports = function(app, UUID, socket, Zones) {
         //         console.log("Result: " + entity.text)
         //     }
         // }
-
         // function attackActionPlayer(data) {
         //     var actionPlayer = World.getPlayerById(data.id);
         //     if (!actionPlayer) {
@@ -62,39 +63,42 @@ module.exports = function(app, UUID, socket, Zones) {
         //     };
         //     console.log("Player " + data.id + " pressed ATTACK on coord: " + actionPlayer.getX() + "," + actionPlayer.getY() + " facing " + actionPlayer.getDir())
         // }
-
         function disconnectPlayer() {
+            if (!this.userid) return;
             console.log('Player Disconnected: ' + this.userid);
             var removePlayer = Zones.getPlayerById(this.userid);
             if (!removePlayer) {
                 console.log("Disconnect | Player not found: " + this.userid);
                 return;
             }
-            Zones.removePlayer(removePlayer);
             this.broadcast.emit("removePlayerClient", { id: removePlayer.getID() });
-            console.log("Current Players: " + JSON.stringify(Zones.getPlayers()))
+            Zones.removePlayer(removePlayer);
+            console.log("Current Players: " + Zones.getPlayers().length)
         }
 
         function getPlayers() {
-            console.log("Sending Player Data" + this.userid)
+            console.log("Sending Player Data " + this.userid)
             var players = Zones.getPlayers()
             for (var i = 0; i < players.length; i++) {
-                this.emit("newPlayerClient", { id: players[i].getID(), x: players[i].getX(), y: players[i].getY() });
+                this.emit("newPlayerClient", players[i].getSerializedPlayer());
             };
         }
 
-        function movePlayer(data) {
-            var movePlayer = Zones.getPlayerById(data.id);
-            if (!movePlayer) {
-                console.log("Move | Player not found: " + data.id);
-                return;
-            };
-            // Update player position
-            movePlayer.setX(data.x);
-            movePlayer.setY(data.y);
-            movePlayer.setDir(data.dir);
-            // Broadcast updated position to connected socket clients
-            this.broadcast.emit("movePlayerClient", { id: movePlayer.getID(), x: movePlayer.getX(), y: movePlayer.getY(), dir: movePlayer.getDir() });
+        function actionPlayer(data) {
+            if (data.action == "move") {
+                var movePlayer = Zones.getPlayerById(data.id);
+                if (!movePlayer) {
+                    console.log("Move | Player not found: " + data.id);
+                    return;
+                };
+                console.log("player moving " + data.id )
+                // Update player position
+                movePlayer.setX(data.x);
+                movePlayer.setY(data.y);
+                movePlayer.setDir(data.dir);
+                // Broadcast updated position to connected socket clients
+                this.broadcast.emit("actionPlayerClient", { id: movePlayer.getID(), x: movePlayer.getX(), y: movePlayer.getY(), dir: movePlayer.getDir(), action: "move" });
+            }
         }
     }
     //////////////////////////////////////////////////////////////////////////////////////////

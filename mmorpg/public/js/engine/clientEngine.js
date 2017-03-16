@@ -1,7 +1,7 @@
    var canvas; // Canvas DOM element
    var ctx; // Canvas rendering context
    var keys; // Keyboard input
-   var world; //world class
+   var zone; //world class
    var localPlayer; // Local player
    var remotePlayers; // Remote players
    var socket; // Socket connection
@@ -17,12 +17,12 @@
    actions.src = "../assets/actions.png";
    window.requestAnimFrame = (function() {
        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function( /* function */ callback, /* DOMElement */ element) {
-           // window.setTimeout(callback, 1000/60);
-           window.setTimeout(callback, 1000);
+           window.setTimeout(callback, 1000 / 60);
+           // window.setTimeout(callback, 1000);
        };
    })();
 
-   function init() {
+   function init(data) {
        console.log("Starting Engine")
        playerList = document.getElementById("playerList");
        consoleList = document.getElementById("consoleList");
@@ -34,20 +34,21 @@
        canvas.width = 768;
        canvas.height = 512;
        keys = new Keys();
-       Zone = Zone();
        remotePlayers = [];
        localPlayer = [];
        ctx.font = "70px Arial";
-       ctx.fillText("Loading.....", 50, 50);
-       // setEventHandlers();
+       ctx.fillText("Loading Jankscape", 50, 50);
+       ctx.font = "20px Arial";
+       loadPlayerData(data)
+       socket.emit("getPlayersServer");
+       setEventHandlers();
    }
    //////////////////////////////////////////////////////////////////////////////////////
    function setEventHandlers() {
        window.addEventListener("keydown", onKeydown, false);
        window.addEventListener("keyup", onKeyup, false);
-       socket.on("getUserDataClient", getUserDataClient);
        socket.on("newPlayerClient", newPlayer);
-       socket.on("movePlayerClient", movePlayer);
+       socket.on("actionPlayerClient", actionPlayer);
        socket.on("removePlayerClient", removePlayer);
        socket.on("disconnect", disconnectPlayer);
    }
@@ -65,28 +66,37 @@
    };
 
    function disconnectPlayer(data) {
-       console.log('user disconnected');
-       alert("Server Connection Lost")
+       console.log('User Disconnected');
+       // alert("Server Connection Lost")
        window.location.href = './';
    }
 
-   function getUserDataClient(data) {
+   function loadPlayerData(data) {
        localPlayer = new Player(data.id);
-       localPlayer.setX(data.x)
-       localPlayer.setY(data.y)
+       localPlayer.setName(data.player.name)
+       localPlayer.setX(data.player.xCoord)
+       localPlayer.setY(data.player.yCoord)
+       localPlayer.setZone(data.player.zone)
+       localPlayer.setHealth(data.player.health)
+       localPlayer.setMana(data.player.mana)
+       localPlayer.setEquipt(data.player.equipt)
+       localPlayer.setInventory(data.player.inventory)
        console.log("----------------------------------------------")
        console.log('ID:  ' + localPlayer.getID());
+       console.log('Name:  ' + localPlayer.getName());
+       console.log('Zone:  ' + localPlayer.getZone());
        console.log('X:  ' + localPlayer.getX());
        console.log('Y:  ' + localPlayer.getY());
-       console.log('Equipt:  ' + data.userEquipt);
-       localPlayer.setEquipt(data.userEquipt)
-       console.log('Inventory:  ' + data.userInventory);
-       localPlayer.setInventory(data.userInventory)
+       console.log('Equipt:  ' + localPlayer.getEquipt());
+       console.log('Inventory:  ' + localPlayer.getInventory());
+       console.log('Health:  ' + localPlayer.getHealth());
+       console.log('Mana:  ' + localPlayer.getMana());
        console.log("----------------------------------------------")
-       console.log(world.getWorldName())
-       socket.emit("getPlayersServer");
+           //
+       zone = new Zone(data.zone.name, data.zone.width, data.zone.height, data.zone.textureMap, data.zone.actionMap, data.zone.entities)
+           //
        var item = document.createElement('li');
-       item.appendChild(document.createTextNode(localPlayer.getID()));
+       item.appendChild(document.createTextNode(localPlayer.getName() + " - " + localPlayer.getID()));
        playerList.appendChild(item);
        //
        var slots = ["Hand", "Head", "Body", "Legs", "Amulet", "Misc"]
@@ -106,36 +116,44 @@
    function newPlayer(data) {
        // Add new player to the remote players array
        var newPlayer = new Player(data.id);
-       newPlayer.setX(data.x)
-       newPlayer.setY(data.y)
-       if (localPlayer.id != newPlayer.id) {
-           console.log("Player connected: " + newPlayer.id);
+       newPlayer.setSerializedPlayer(data)
+       if (localPlayer.getID() != newPlayer.getID()) {
+           console.log("Player connected: " + newPlayer.getID());
            remotePlayers.push(newPlayer);
            var item = document.createElement('li');
-           item.appendChild(document.createTextNode(newPlayer.id));
+           item.appendChild(document.createTextNode(newPlayer.getName() + " - " + newPlayer.getID()));
            playerList.appendChild(item);
-           consoleText(newPlayer.id + " Joined The Server")
+           consoleText(newPlayer.getID() + " Joined The Server")
        }
    };
 
-   function movePlayer(data) {
-       var movePlayer = playerById(data.id);
-       // Player not found
-       if (!movePlayer) {
-           console.log("Player not found: " + data.id);
-           return;
-       };
-       // Update player position
-       movePlayer.setX(data.x);
-       movePlayer.setY(data.y);
-       movePlayer.setDir(data.dir);
+   function actionPlayer(data) {
+   	console.log("player trying tp movg " + data.id )
+       if (data.action == "move") {
+       	console.log("player moving " + data.id )
+           var movePlayer = playerById(data.id);
+           // Player not found
+           if (!movePlayer) {
+               console.log("Player not found: " + data.id);
+               return;
+           };
+           // Player not found in Zone
+           if (movePlayer.getZone() != localPlayer.getZone()) {
+               console.log("Player not in this Zone: " + data.id);
+               return;
+           };
+           // Update player position
+           movePlayer.setX(data.x);
+           movePlayer.setY(data.y);
+           movePlayer.setDir(data.dir);
+       }
    };
 
    function removePlayer(data) {
-       console.log("Player Removed: " + data.id);
+       console.log("Player Left: " + data.id);
        var lis = playerList.getElementsByTagName("li");
        for (var i = lis.length - 1; i >= 0; i--) {
-           if (lis[i].textContent == data.id) {
+           if (lis[i].textContent.includes(' - ' + data.id)) {
                lis[i].remove()
            }
        }
@@ -161,8 +179,6 @@
    function animate() {
        update();
        draw();
-       // Request a new animation frame using Paul Irish's shim
-       // window.requestAnimationFrame(window.requestAnimationFrame);
        window.requestAnimFrame(animate);
        // window.setTimeout(animate, 50);
    };
@@ -173,7 +189,7 @@
    function move(dir) {
        switch (dir) {
            case "left":
-               var entity = world.getEntityAt(localPlayer.getX() - 1, localPlayer.getY())
+               var entity = zone.getEntityAt(localPlayer.getX() - 1, localPlayer.getY())
                if (!!entity && entity.canMove == false) {
                    return
                }
@@ -186,7 +202,7 @@
                }
                break;
            case "right":
-               var entity = world.getEntityAt(localPlayer.getX() + 1, localPlayer.getY())
+               var entity = zone.getEntityAt(localPlayer.getX() + 1, localPlayer.getY())
                if (!!entity && entity.canMove == false) {
                    return
                }
@@ -199,7 +215,7 @@
                }
                break;
            case "up":
-               var entity = world.getEntityAt(localPlayer.getX(), localPlayer.getY() - 1)
+               var entity = zone.getEntityAt(localPlayer.getX(), localPlayer.getY() - 1)
                if (!!entity && entity.canMove == false) {
                    return
                }
@@ -212,7 +228,7 @@
                }
                break;
            case "down":
-               var entity = world.getEntityAt(localPlayer.getX(), localPlayer.getY() + 1)
+               var entity = zone.getEntityAt(localPlayer.getX(), localPlayer.getY() + 1)
                if (!!entity && entity.canMove == false) {
                    return
                }
@@ -259,17 +275,17 @@
        if (keys.z) {
            if (localPlayer.getCanAction()) {
                console.log("ATTACK")
-               socket.emit("attackActionPlayerServer", { id: localPlayer.getID() });
+               socket.emit("movePlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir(), action: 'attack' });
                localPlayer.setCanAction(false);
                setTimeout(function() { actionReset() }, 300);
            }
        };
        if (keys.x) {
            console.log("USE")
-           socket.emit("useActionPlayerServer", { id: localPlayer.getID() });
+           socket.emit("movePlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir(), action: 'use' });
        };
        if ((prevX != localPlayer.getX() || prevY != localPlayer.getY()) ? true : false) {
-           socket.emit("movePlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir() });
+           socket.emit("actionPlayerServer", { id: localPlayer.getID(), x: localPlayer.getX(), y: localPlayer.getY(), dir: localPlayer.getDir(), action: 'move' });
        };
    };
    /**************************************************
@@ -281,16 +297,16 @@
        var xCoord = localPlayer.getX()
        var yCoord = localPlayer.getY()
            //Draw Textures
-       for (var x = 0; x < world.getWorldWidth(); x++) {
-           for (var y = 0; y < world.getWorldHeight(); y++) {
-               ctx.drawImage(tiles, world.getTile(0, x, y) * world.getTileSize(), 0, world.getTileSize(), world.getTileSize(), x * world.getTileSize(), y * world.getTileSize(), world.getTileSize(), world.getTileSize());
+       for (var x = 0; x < zone.getWidth(); x++) {
+           for (var y = 0; y < zone.getHeight(); y++) {
+               ctx.drawImage(tiles, zone.getTileTexture(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
            }
        }
-       //Draw Overlays/Entities
-       for (var x = 0; x < world.getWorldWidth(); x++) {
-           for (var y = 0; y < world.getWorldHeight(); y++) {
-               if (world.getTile(1, x, y) != 0) {
-                   ctx.drawImage(objects, world.getTile(1, x, y) * world.getTileSize(), 0, world.getTileSize(), world.getTileSize(), x * world.getTileSize(), y * world.getTileSize(), world.getTileSize(), world.getTileSize());
+       //Draw Entities
+       for (var x = 0; x < zone.getWidth(); x++) {
+           for (var y = 0; y < zone.getHeight(); y++) {
+               if (zone.getTileAction(x, y) != 0) {
+                   ctx.drawImage(objects, zone.getTileAction(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
                }
            }
        }
@@ -298,8 +314,8 @@
        ctx.setTransform(1, 0, 0, 1, 0, 0);
        var camx = (32 * xCoord - ((canvas.width) / 2))
        var camy = (32 * yCoord - ((canvas.height) / 2))
-       var endBoundX = (world.getWorldWidth() * 32) - canvas.width
-       var endBoundY = (world.getWorldHeight() * 32) - canvas.height
+       var endBoundX = (zone.getWidth() * 32) - canvas.width
+       var endBoundY = (zone.getHeight() * 32) - canvas.height
        if (camx >= endBoundX) { camx = endBoundX }
        if (camy >= endBoundY) { camy = endBoundY }
        if (camy <= 0) { camy = 0 }
@@ -322,9 +338,8 @@
    }
    // Find player by ID
    function playerById(id) {
-       var i;
-       for (i = 0; i < remotePlayers.length; i++) {
-           if (remotePlayers[i].id == id) return remotePlayers[i];
+       for (var i = 0; i < remotePlayers.length; i++) {
+           if (remotePlayers[i].getID() == id) return remotePlayers[i];
        };
        return false;
    };
