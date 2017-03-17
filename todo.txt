@@ -5,6 +5,7 @@
 
 --Zones--
 Give textures walk boolean (texture db)
-kill actionmap
+
+kill actionmap (make texturemap 1 -> [1,false])
 actionMap => array of entities(items,barricades,dropables with x and y)
 
