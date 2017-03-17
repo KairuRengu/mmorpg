@@ -1,7 +1,6 @@
 {
  	"name": "Home",
- 	"players": [],
- 	"width": 27,
+  	"width": 27,
  	"height": 22,
  	"tileSize": 32,
  	"textureMap": [

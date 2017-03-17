@@ -1,0 +1,11 @@
+"items": [{
+ 		"index": 0,
+ 		"name": "Sword",
+ 		"text": "This Is A Sword",
+ 		"image": "sword.png"
+ 	}, {
+ 		"index": 1,
+ 		"name": "Sword",
+ 		"text": "This Is A Sword",
+ 		"image": "sword.png"
+ 	}]

@@ -1,0 +1,10 @@
+--Items--
+-Json list of items
+--turn into classes like zones/zone
+
+
+--Zones--
+Give textures walk boolean (texture db)
+kill actionmap
+actionMap => array of entities(items,barricades,dropables with x and y)
+
