@@ -49,6 +49,7 @@
        window.addEventListener("keyup", onKeyup, false);
        socket.on("newPlayerClient", newPlayer);
        socket.on("actionPlayerClient", actionPlayer);
+       socket.on("actionZoneClient", actionZone);
        socket.on("removePlayerClient", removePlayer);
        socket.on("disconnect", disconnectPlayer);
    }
@@ -142,6 +143,15 @@
        switch (data.action) {
            case "move":
                actionPlayer.setSerializedPlayer(data.player);
+               break;
+       }
+   };
+
+   function actionZone(data) {
+       switch (data.action) {
+           case "zoneChange":
+               console.log("zonechange")
+               zone.setSerializedZone(data.zone);
                break;
        }
    };

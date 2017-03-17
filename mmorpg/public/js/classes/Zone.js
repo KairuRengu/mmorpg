@@ -11,12 +11,21 @@ var Zone = function(name, width, height, textureMap, actionMap, entities) {
         return name
     };
 
-    function setActionMap(aMap) {
-        actionMap = aMap
+    function setEntity(index, x, y) {
+        actionMap[y * width + x] = index
     };
 
     function getSerializedZone() {
         return { name: name, textureMap: textureMap, actionMap: actionMap, entities: entities, width: width, height: height }
+    };
+
+    function setSerializedZone(sZone) {
+        name = sZone.name
+        textureMap = sZone.textureMap
+        actionMap = sZone.actionMap
+        entities = sZone.entities
+        width = sZone.width
+        height = sZone.height
     };
     var getWidth = function() {
         return width;
@@ -57,12 +66,13 @@ var Zone = function(name, width, height, textureMap, actionMap, entities) {
         }
     }
     return {
-        setActionMap: setActionMap,
+        setEntity: setEntity,
         getCoordTileAdj: getCoordTileAdj,
         getName: getName,
         getWidth: getWidth,
         getHeight: getHeight,
         getSerializedZone: getSerializedZone,
+        setSerializedZone: setSerializedZone,
         getTileSize: getTileSize,
         getTileTexture: getTileTexture,
         getTileAction: getTileAction,

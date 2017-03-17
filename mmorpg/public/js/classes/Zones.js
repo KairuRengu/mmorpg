@@ -1,7 +1,6 @@
 var Zones = function() {
     var zones = []
     var players = []
-    var entities = []
         //
     function getZones() {
         return zones
