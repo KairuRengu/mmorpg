@@ -84,23 +84,20 @@ module.exports = function(app, UUID, socket, Zones) {
                     this.broadcast.emit("actionPlayerClient", { action: 'move', player: actionPlayer.getSerializedPlayer() });
                     break;
                 case "use":
-                    var playerZone = Zones.getZone(data.player.zone)
-                    var entityTile = playerZone.getCoordTileAdj(actionPlayer.getX(), actionPlayer.getY(), actionPlayer.getDir())
-                    var entity = playerZone.getEntityAt(entityTile.x, entityTile.y)
-                    if (!!entity) {
-                        console.log("Result: " + entity.text)
-                    }
+                    // var playerZone = Zones.getZone(data.player.zone)
+                    // var entityTile = playerZone.getCoordTileAdj(actionPlayer.getX(), actionPlayer.getY(), actionPlayer.getDir())
+                    // var entity = playerZone.getEntityAt(entityTile.x, entityTile.y)
+                    // if (!!entity) {
+                    //     console.log("Result: " + entity.text)
+                    // }
                     break;
                 case "attack":
-                    console.log("atack>")
-                    var playerZone = Zones.getZone(data.player.zone)
-                    playerZone.setEntity(2, actionPlayer.getX(), actionPlayer.getY())
-                    socket.emit("actionZoneClient", { action: 'zoneChange', zone: playerZone.getSerializedZone() });
+                    // console.log("atack>")
+                    // var playerZone = Zones.getZone(data.player.zone)
+                    // playerZone.setEntity(2, actionPlayer.getX(), actionPlayer.getY())
+                    // socket.emit("actionZoneClient", { action: 'zoneChange', zone: playerZone.getSerializedZone() });
                     break;
             }
         }
     }
     //////////////////////////////////////////////////////////////////////////////////////////
-    // var playerZone = Zones.getZone(data.player.zone)
-    // playerZone.setEntity(2,actionPlayer.getX(), actionPlayer.getY())
-    // socket.emit("actionZoneClient", { action: 'zoneChange', zone: playerZone.getSerializedZone() });

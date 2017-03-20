@@ -1,9 +1,10 @@
-var Zone = function(name, width, height, textureMap, actionMap, entities) {
+var Zone = function(name, width, height, textureMap, overlayMap, actionMap) {
     var name = name
     var tileSize = 32
     var textureMap = textureMap
+    var overlayMap = overlayMap
     var actionMap = actionMap
-    var entities = entities
+    var entities = []
     var width = width
     var height = height
         //
@@ -16,14 +17,14 @@ var Zone = function(name, width, height, textureMap, actionMap, entities) {
     };
 
     function getSerializedZone() {
-        return { name: name, textureMap: textureMap, actionMap: actionMap, entities: entities, width: width, height: height }
+        return { name: name, textureMap: textureMap, actionMap: actionMap, overlayMap: overlayMap, width: width, height: height }
     };
 
     function setSerializedZone(sZone) {
         name = sZone.name
         textureMap = sZone.textureMap
         actionMap = sZone.actionMap
-        entities = sZone.entities
+        overlayMap = sZone.overlayMap
         width = sZone.width
         height = sZone.height
     };
@@ -39,18 +40,36 @@ var Zone = function(name, width, height, textureMap, actionMap, entities) {
     var getTileTexture = function(col, row) {
         return textureMap[row * width + col];
     }
+    var getTileOverlay = function(col, row) {
+        return overlayMap[row * width + col];
+    }
     var getTileAction = function(col, row) {
         return actionMap[row * width + col];
     }
-    var getEntityAt = function(x, y) {
-        var entityIndex = actionMap[y * width + x];
-        for (var i = entities.length - 1; i >= 0; i--) {
-            if (entities[i].index == entityIndex) {
-                return entities[i]
+    var canMove = function(x, y, dir) {
+            if (dir == "up" && getTileAction(x, y - 1) != 0) {
+                return true
             }
+            if (dir == "down" && getTileAction(x, y + 1) != 0) {
+                return true
+            }
+            if (dir == "left" && getTileAction(x - 1, y) != 0) {
+                return true
+            }
+            if (dir == "right" && getTileAction(x + 1, y) != 0) {
+                return true
+            }
+            return false
         }
-        return false
-    }
+        // var getEntityAt = function(x, y) {
+        //     var entityIndex = actionMap[y * width + x];
+        //     for (var i = entities.length - 1; i >= 0; i--) {
+        //         if (entities[i].index == entityIndex) {
+        //             return entities[i]
+        //         }
+        //     }
+        //     return false
+        // }
     var getCoordTileAdj = function(x, y, dir) {
         if (dir == "up") {
             return { y: (y - 1), x: x };
@@ -66,7 +85,9 @@ var Zone = function(name, width, height, textureMap, actionMap, entities) {
         }
     }
     return {
-        setEntity: setEntity,
+        canMove: canMove,
+        // setEntity: setEntity,
+        getTileOverlay: getTileOverlay,
         getCoordTileAdj: getCoordTileAdj,
         getName: getName,
         getWidth: getWidth,
@@ -76,7 +97,7 @@ var Zone = function(name, width, height, textureMap, actionMap, entities) {
         getTileSize: getTileSize,
         getTileTexture: getTileTexture,
         getTileAction: getTileAction,
-        getEntityAt: getEntityAt
+        // getEntityAt: getEntityAt
     }
 }
 try {

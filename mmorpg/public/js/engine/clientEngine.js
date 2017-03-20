@@ -11,8 +11,10 @@
    var inventoryTable;
    tiles = new Image();
    tiles.src = "../assets/tiles.png";
-   objects = new Image();
-   objects.src = "../assets/objects.png";
+   overlays = new Image();
+   overlays.src = "../assets/overlays.png";
+   debug = new Image();
+   debug.src = "../assets/debug.png";
    actions = new Image();
    actions.src = "../assets/actions.png";
    window.requestAnimFrame = (function() {
@@ -94,7 +96,7 @@
        console.log('Mana:  ' + localPlayer.getMana());
        console.log("----------------------------------------------")
            //
-       zone = new Zone(data.zone.name, data.zone.width, data.zone.height, data.zone.textureMap, data.zone.actionMap, data.zone.entities)
+       zone = new Zone(data.zone.name, data.zone.width, data.zone.height, data.zone.textureMap, data.zone.overlayMap, data.zone.actionMap)
            //
        var item = document.createElement('li');
        item.appendChild(document.createTextNode(localPlayer.getName() + " - " + localPlayer.getID()));
@@ -194,52 +196,40 @@
     **************************************************/
    //
    function move(dir) {
+       localPlayer.setDir(dir)
        switch (dir) {
            case "left":
-               var entity = zone.getEntityAt(localPlayer.getX() - 1, localPlayer.getY())
-               if (!!entity && entity.canMove == false) {
-                   return
-               }
-               if (localPlayer.getCanMove()) {
+               if (zone.canMove(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir()) && localPlayer.getCanMove()) {
                    var newX = localPlayer.getX()
                    localPlayer.setCanMove(false);
                    newX -= 1
                    localPlayer.setX(newX)
                    setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
                }
+               return
                break;
            case "right":
-               var entity = zone.getEntityAt(localPlayer.getX() + 1, localPlayer.getY())
-               if (!!entity && entity.canMove == false) {
-                   return
-               }
-               if (localPlayer.getCanMove()) {
+               if (zone.canMove(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir()) && localPlayer.getCanMove()) {
                    var newX = localPlayer.getX()
                    localPlayer.setCanMove(false);
                    newX += 1
                    localPlayer.setX(newX)
                    setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
                }
+               return
                break;
            case "up":
-               var entity = zone.getEntityAt(localPlayer.getX(), localPlayer.getY() - 1)
-               if (!!entity && entity.canMove == false) {
-                   return
-               }
-               if (localPlayer.getCanMove()) {
+               if (zone.canMove(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir()) && localPlayer.getCanMove()) {
                    var newY = localPlayer.getY()
                    localPlayer.setCanMove(false);
                    newY -= 1
                    localPlayer.setY(newY)
                    setTimeout(function() { moveReset() }, localPlayer.getMoveSpeed());
                }
+               return
                break;
            case "down":
-               var entity = zone.getEntityAt(localPlayer.getX(), localPlayer.getY() + 1)
-               if (!!entity && entity.canMove == false) {
-                   return
-               }
-               if (localPlayer.getCanMove()) {
+               if (zone.canMove(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir()) && localPlayer.getCanMove()) {
                    var newY = localPlayer.getY()
                    localPlayer.setCanMove(false);
                    newY += 1
@@ -264,20 +254,16 @@
        //
        if (keys.up & !keys.down) {
            move("up")
-           localPlayer.setDir("up")
        }
        if (!keys.up & keys.down) {
            move("down")
-           localPlayer.setDir("down")
        }
        //
        if (keys.left & !keys.right) {
            move("left")
-           localPlayer.setDir("left")
        }
        if (!keys.left & keys.right) {
            move("right")
-           localPlayer.setDir("right")
        };
        if ((prevX != localPlayer.getX() || prevY != localPlayer.getY()) ? true : false) {
            socket.emit("actionPlayerServer", { action: 'move', player: localPlayer.getSerializedPlayer() });
@@ -307,14 +293,26 @@
                ctx.drawImage(tiles, zone.getTileTexture(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
            }
        }
-       //Draw Entities
+       //Draw Overlays
        for (var x = 0; x < zone.getWidth(); x++) {
            for (var y = 0; y < zone.getHeight(); y++) {
-               if (zone.getTileAction(x, y) != 0) {
-                   ctx.drawImage(objects, zone.getTileAction(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
-               }
+               ctx.drawImage(overlays, zone.getTileOverlay(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
            }
        }
+       //Draw Debug
+       for (var x = 0; x < zone.getWidth(); x++) {
+           for (var y = 0; y < zone.getHeight(); y++) {
+               ctx.drawImage(debug, zone.getTileAction(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
+           }
+       }
+       //Draw Entities
+       // for (var x = 0; x < zone.getWidth(); x++) {
+       //     for (var y = 0; y < zone.getHeight(); y++) {
+       //         if (zone.getTileAction(x, y) != 0) {
+       //             ctx.drawImage(objects, zone.getTileAction(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
+       //         }
+       //     }
+       // }
        //CAMERA.
        ctx.setTransform(1, 0, 0, 1, 0, 0);
        var camx = (32 * xCoord - ((canvas.width) / 2))
