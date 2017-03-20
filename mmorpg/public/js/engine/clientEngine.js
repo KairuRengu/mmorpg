@@ -15,6 +15,8 @@
    overlays.src = "../assets/overlays.png";
    debug = new Image();
    debug.src = "../assets/debug.png";
+   entities = new Image();
+   entities.src = "../assets/entities.png";
    actions = new Image();
    actions.src = "../assets/actions.png";
    window.requestAnimFrame = (function() {
@@ -49,6 +51,8 @@
    function setEventHandlers() {
        window.addEventListener("keydown", onKeydown, false);
        window.addEventListener("keyup", onKeyup, false);
+       window.addEventListener("mousedown", onMousedown, false);
+       window.addEventListener("mouseup", onMouseup, false);
        socket.on("newPlayerClient", newPlayer);
        socket.on("actionPlayerClient", actionPlayer);
        socket.on("actionZoneClient", actionZone);
@@ -67,10 +71,21 @@
            keys.onKeyUp(e);
        };
    };
+   // Keyboard key down
+   function onMousedown(e) {
+       if (localPlayer) {
+           keys.onMouseDown(e);
+       };
+   };
+   // Keyboard key up
+   function onMouseup(e) {
+       if (localPlayer) {
+           keys.onMouseUp(e);
+       };
+   };
 
    function disconnectPlayer(data) {
        console.log('User Disconnected');
-       // alert("Server Connection Lost")
        window.location.href = './';
    }
 
@@ -96,7 +111,7 @@
        console.log('Mana:  ' + localPlayer.getMana());
        console.log("----------------------------------------------")
            //
-       zone = new Zone(data.zone.name, data.zone.width, data.zone.height, data.zone.textureMap, data.zone.overlayMap, data.zone.actionMap)
+       zone = new Zone(data.zone.name, data.zone.width, data.zone.height, data.zone.textureMap, data.zone.overlayMap, data.zone.actionMap, data.zone.entities)
            //
        var item = document.createElement('li');
        item.appendChild(document.createTextNode(localPlayer.getName() + " - " + localPlayer.getID()));
@@ -268,15 +283,19 @@
        if ((prevX != localPlayer.getX() || prevY != localPlayer.getY()) ? true : false) {
            socket.emit("actionPlayerServer", { action: 'move', player: localPlayer.getSerializedPlayer() });
        };
-       if (keys.z) {
+       if (keys.mouseLeft) {
            if (localPlayer.getCanAction()) {
                socket.emit("actionPlayerServer", { action: 'attack', player: localPlayer.getSerializedPlayer() });
                localPlayer.setCanAction(false);
                setTimeout(function() { actionReset() }, 300);
            }
        };
-       if (keys.x) {
-           socket.emit("actionPlayerServer", { action: 'use', player: localPlayer.getSerializedPlayer() });
+       if (keys.use) {
+           if (localPlayer.getCanAction()) {
+               socket.emit("actionPlayerServer", { action: 'use', player: localPlayer.getSerializedPlayer() });
+               localPlayer.setCanAction(false);
+               setTimeout(function() { actionReset() }, 300);
+           }
        };
    };
    /**************************************************
@@ -306,13 +325,11 @@
            }
        }
        //Draw Entities
-       // for (var x = 0; x < zone.getWidth(); x++) {
-       //     for (var y = 0; y < zone.getHeight(); y++) {
-       //         if (zone.getTileAction(x, y) != 0) {
-       //             ctx.drawImage(objects, zone.getTileAction(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
-       //         }
-       //     }
-       // }
+       var entity = zone.getEntities()
+       for (var i = entity.length - 1; i >= 0; i--) {
+           ctx.drawImage(entities, entity[i].tile * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), entity[i].x * zone.getTileSize(), entity[i].y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
+       }
+     
        //CAMERA.
        ctx.setTransform(1, 0, 0, 1, 0, 0);
        var camx = (32 * xCoord - ((canvas.width) / 2))

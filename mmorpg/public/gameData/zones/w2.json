@@ -1,6 +1,5 @@
 {
  	"name": "House",
- 	"players": [],
  	"width": 5,
  	"height": 5,
  	"tileSize": 32,
@@ -12,24 +11,18 @@
  		1, 1, 1, 1, 1
  		
  	],
- 	"actionMap": [
+ 	"overlayMap": [
  		1, 1, 1, 1, 1, 
  		1, 0, 0, 0, 1, 
  		1, 0, 0, 0, 1, 
  		1, 0, 0, 2, 1, 
  		1, 1, 1, 1, 1
  	],
- 	"entities": [{
- 		"index": 1,
- 		"name": "Shrub",
- 		"text": "This Is A Shrub",
- 		"tile": 1,
- 		"canMove": false
- 	}, {
- 		"index": 2,
- 		"name": "Box",
- 		"text": "This Is A Box",
- 		"tile": 2,
- 		"canMove": false
- 	}]
+ 		"actionMap": [
+ 		1, 1, 1, 1, 1, 
+ 		1, 0, 0, 0, 1, 
+ 		1, 0, 0, 0, 1, 
+ 		1, 0, 0, 0, 1, 
+ 		1, 1, 1, 1, 1
+ 	]
  }

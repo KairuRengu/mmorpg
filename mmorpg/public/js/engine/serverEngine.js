@@ -35,7 +35,7 @@ module.exports = function(app, UUID, socket, Zones) {
                     console.log('Player Name: ' + newPlayer.getName());
                     console.log('Player Location: ' + newPlayer.getX() + "," + newPlayer.getY());
                     console.log("Player added to Zone: " + newPlayer.getZone())
-                    client.emit("loginResponse", { status: true, id: newPlayer.getID(), player: user.player, zone: Zones.getZones()[0].getSerializedZone() })
+                    client.emit("loginResponse", { status: true, id: newPlayer.getID(), player: user.player, zone: Zones.getZone(newPlayer.getZone()).getSerializedZone() })
                     socket.emit("newPlayerClient", newPlayer.getSerializedPlayer());
                     console.log("----")
                     console.log("Current Players: " + Zones.getPlayers().length)
@@ -84,6 +84,7 @@ module.exports = function(app, UUID, socket, Zones) {
                     this.broadcast.emit("actionPlayerClient", { action: 'move', player: actionPlayer.getSerializedPlayer() });
                     break;
                 case "use":
+                console.log("use")
                     // var playerZone = Zones.getZone(data.player.zone)
                     // var entityTile = playerZone.getCoordTileAdj(actionPlayer.getX(), actionPlayer.getY(), actionPlayer.getDir())
                     // var entity = playerZone.getEntityAt(entityTile.x, entityTile.y)
@@ -92,6 +93,7 @@ module.exports = function(app, UUID, socket, Zones) {
                     // }
                     break;
                 case "attack":
+                 console.log("attack")
                     // console.log("atack>")
                     // var playerZone = Zones.getZone(data.player.zone)
                     // playerZone.setEntity(2, actionPlayer.getX(), actionPlayer.getY())
