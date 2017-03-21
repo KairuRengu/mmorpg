@@ -51,7 +51,7 @@
        window.addEventListener("mousedown", onMousedown, false);
        window.addEventListener("mouseup", onMouseup, false);
        socket.on("newPlayerClient", newPlayer);
-       socket.on("actionPlayersClient", actionPlayers);
+       socket.on("updatePlayersClient", updatePlayers);
        socket.on("actionPlayerClient", actionPlayer);
        socket.on("removePlayerClient", removePlayer);
        socket.on("updateZoneClient",updateZone);
@@ -143,7 +143,7 @@
        }
    };
 
-   function actionPlayers(data) {
+   function updatePlayers(data) {
        var actionPlayer = getPlayerById(data.player.id);
        if (!actionPlayer) {
            console.log("Player not found: " + data.player.id);
@@ -155,7 +155,9 @@
     if (data.zone.name == localPlayer.getZone()){
       zone.setSerializedZone(data.zone)
     }
-    // console.log(data.zone.name)
+   }
+      function updateInventory(data){
+    localPlayer.setInventory(data.inventory)
    }
 
    function actionPlayer(data) {

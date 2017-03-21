@@ -86,7 +86,7 @@ module.exports = function(app, UUID, socket, Zones) {
                         actionPlayer.setZone(zoneEntity.zone);
                         this.emit("actionPlayerClient", { action: 'zoneChange', player: actionPlayer.getSerializedPlayer(), zone: Zones.getZone(zoneEntity.zone).getSerializedZone() });
                     }
-                    this.broadcast.emit("actionPlayersClient", { action: 'move', player: actionPlayer.getSerializedPlayer() });
+                    this.broadcast.emit("updatePlayersClient", { player: actionPlayer.getSerializedPlayer() });
                     break;
                 case "use":
                     var playerZone = Zones.getZone(actionPlayer.getZone())

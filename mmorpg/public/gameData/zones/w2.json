@@ -52,5 +52,53 @@
         "canWalk": true,
         "canUse": false,
         "visible": true
+    }, {
+        "x": 2,
+        "y": 2,
+        "name": "Flower",
+        "type": "item",
+        "useText": "This Is A Flower",
+        "tile": 3,
+        "canWalk": false,
+        "canUse": false,
+        "canAttack": true,
+        "visible": true,
+        "health": 100
+    }, {
+        "x": 2,
+        "y": 3,
+        "name": "Flower",
+        "type": "item",
+        "useText": "This Is A Flower",
+        "tile": 3,
+        "canWalk": false,
+        "canUse": false,
+        "canAttack": true,
+        "visible": true,
+        "health": 100
+    }, {
+        "x": 3,
+        "y": 2,
+        "name": "Flower",
+        "type": "item",
+        "useText": "This Is A Flower",
+        "tile": 3,
+        "canWalk": false,
+        "canUse": false,
+        "canAttack": true,
+        "visible": true,
+        "health": 100
+    }, {
+        "x": 3,
+        "y": 3,
+        "name": "Flower",
+        "type": "item",
+        "useText": "This Is A Flower",
+        "tile": 3,
+        "canWalk": false,
+        "canUse": false,
+        "canAttack": true,
+        "visible": true,
+        "health": 100
     }]
 }
