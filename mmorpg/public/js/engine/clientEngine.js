@@ -13,8 +13,6 @@
    tiles.src = "../assets/tiles.png";
    overlays = new Image();
    overlays.src = "../assets/overlays.png";
-   debug = new Image();
-   debug.src = "../assets/debug.png";
    entities = new Image();
    entities.src = "../assets/entities.png";
    actions = new Image();
@@ -22,7 +20,6 @@
    window.requestAnimFrame = (function() {
        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function( /* function */ callback, /* DOMElement */ element) {
            window.setTimeout(callback, 1000 / 60);
-           // window.setTimeout(callback, 1000);
        };
    })();
 
@@ -54,9 +51,10 @@
        window.addEventListener("mousedown", onMousedown, false);
        window.addEventListener("mouseup", onMouseup, false);
        socket.on("newPlayerClient", newPlayer);
+       socket.on("actionPlayersClient", actionPlayers);
        socket.on("actionPlayerClient", actionPlayer);
-       socket.on("actionZoneClient", actionZone);
        socket.on("removePlayerClient", removePlayer);
+       socket.on("updateZoneClient",updateZone);
        socket.on("disconnect", disconnectPlayer);
    }
    // Keyboard key down
@@ -145,31 +143,30 @@
        }
    };
 
-   function actionPlayer(data) {
+   function actionPlayers(data) {
        var actionPlayer = getPlayerById(data.player.id);
-       // Player not found
        if (!actionPlayer) {
            console.log("Player not found: " + data.player.id);
            return;
        };
-       // Player not found in Zone
-       if (actionPlayer.getZone() != localPlayer.getZone()) {
-           console.log("Player not in this Zone: " + data.player.id);
-           return;
-       };
-       switch (data.action) {
-           case "move":
-               actionPlayer.setSerializedPlayer(data.player);
-               break;
-       }
+       actionPlayer.setSerializedPlayer(data.player);
    };
+   function updateZone(data){
+    if (data.zone.name == localPlayer.getZone()){
+      zone.setSerializedZone(data.zone)
+    }
+    // console.log(data.zone.name)
+   }
 
-   function actionZone(data) {
+   function actionPlayer(data) {
        switch (data.action) {
            case "zoneChange":
-               console.log("zonechange")
+               localPlayer.setSerializedPlayer(data.player)
                zone.setSerializedZone(data.zone);
                break;
+           case "consoleText":
+               consoleText(data.text)
+               break
        }
    };
 
@@ -204,7 +201,6 @@
        update();
        draw();
        window.requestAnimFrame(animate);
-       // window.setTimeout(animate, 50);
    };
    /**************************************************
     ** GAME UPDATE
@@ -266,6 +262,7 @@
    function update() {
        var prevX = localPlayer.getX();
        var prevY = localPlayer.getY();
+       var prevDir = localPlayer.getDir();
        //
        if (keys.up & !keys.down) {
            move("up")
@@ -280,7 +277,7 @@
        if (!keys.left & keys.right) {
            move("right")
        };
-       if ((prevX != localPlayer.getX() || prevY != localPlayer.getY()) ? true : false) {
+       if ((prevX != localPlayer.getX() || prevY != localPlayer.getY() || prevDir != localPlayer.getDir())) {
            socket.emit("actionPlayerServer", { action: 'move', player: localPlayer.getSerializedPlayer() });
        };
        if (keys.mouseLeft) {
@@ -318,18 +315,13 @@
                ctx.drawImage(overlays, zone.getTileOverlay(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
            }
        }
-       //Draw Debug
-       for (var x = 0; x < zone.getWidth(); x++) {
-           for (var y = 0; y < zone.getHeight(); y++) {
-               ctx.drawImage(debug, zone.getTileAction(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
-           }
-       }
        //Draw Entities
        var entity = zone.getEntities()
        for (var i = entity.length - 1; i >= 0; i--) {
-           ctx.drawImage(entities, entity[i].tile * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), entity[i].x * zone.getTileSize(), entity[i].y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
+           if (entity[i].visible == true) {
+               ctx.drawImage(entities, entity[i].tile * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), entity[i].x * zone.getTileSize(), entity[i].y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
+           }
        }
-     
        //CAMERA.
        ctx.setTransform(1, 0, 0, 1, 0, 0);
        var camx = (32 * xCoord - ((canvas.width) / 2))
@@ -343,7 +335,9 @@
        ctx.translate(-camx, -camy);
        // Draw the remote players
        for (var i = 0; i < remotePlayers.length; i++) {
-           drawPlayer(remotePlayers[i], ctx)
+           if (remotePlayers[i].getZone() == localPlayer.getZone()) {
+               drawPlayer(remotePlayers[i], ctx)
+           }
        };
        // Draw the local player
        drawPlayer(localPlayer, ctx)

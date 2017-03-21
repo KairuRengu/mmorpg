@@ -7,7 +7,7 @@ module.exports = function(app, UUID, socket, Zones) {
             console.log('Unknown Player Connected');
             client.on("login", playerLogin);
             client.on("disconnect", disconnectPlayer);
-            client.on("getPlayersServer", getPlayers);
+            client.on("getPlayersServer", getPlayerList);
             client.on("actionPlayerServer", actionPlayer);
         });
 
@@ -59,7 +59,7 @@ module.exports = function(app, UUID, socket, Zones) {
             console.log("Current Players: " + Zones.getPlayers().length)
         }
 
-        function getPlayers() {
+        function getPlayerList() {
             console.log("Sending Player Data " + this.userid)
             var players = Zones.getPlayers()
             for (var i = 0; i < players.length; i++) {
@@ -76,28 +76,38 @@ module.exports = function(app, UUID, socket, Zones) {
             };
             switch (data.action) {
                 case "move":
-                    // Update player position
                     actionPlayer.setX(data.player.x);
                     actionPlayer.setY(data.player.y);
                     actionPlayer.setDir(data.player.direction);
-                    // Broadcast updated position to connected socket clients
-                    this.broadcast.emit("actionPlayerClient", { action: 'move', player: actionPlayer.getSerializedPlayer() });
+                    var zoneEntity = Zones.getZone(actionPlayer.getZone()).getEntity(actionPlayer.getX(), actionPlayer.getY())
+                    if (zoneEntity && zoneEntity.type == "zoneChange") {
+                        actionPlayer.setX(zoneEntity.x2);
+                        actionPlayer.setY(zoneEntity.y2);
+                        actionPlayer.setZone(zoneEntity.zone);
+                        this.emit("actionPlayerClient", { action: 'zoneChange', player: actionPlayer.getSerializedPlayer(), zone: Zones.getZone(zoneEntity.zone).getSerializedZone() });
+                    }
+                    this.broadcast.emit("actionPlayersClient", { action: 'move', player: actionPlayer.getSerializedPlayer() });
                     break;
                 case "use":
-                console.log("use")
-                    // var playerZone = Zones.getZone(data.player.zone)
-                    // var entityTile = playerZone.getCoordTileAdj(actionPlayer.getX(), actionPlayer.getY(), actionPlayer.getDir())
-                    // var entity = playerZone.getEntityAt(entityTile.x, entityTile.y)
-                    // if (!!entity) {
-                    //     console.log("Result: " + entity.text)
-                    // }
+                    var playerZone = Zones.getZone(actionPlayer.getZone())
+                    var entity = playerZone.getAdjEntity(actionPlayer.getX(), actionPlayer.getY(), actionPlayer.getDir())
+                    if (entity && entity.canUse) {
+                        this.emit("actionPlayerClient", { action: 'consoleText', text: "Using " + entity.name })
+                    }
                     break;
                 case "attack":
-                 console.log("attack")
-                    // console.log("atack>")
-                    // var playerZone = Zones.getZone(data.player.zone)
-                    // playerZone.setEntity(2, actionPlayer.getX(), actionPlayer.getY())
-                    // socket.emit("actionZoneClient", { action: 'zoneChange', zone: playerZone.getSerializedZone() });
+                    console.log("attack")
+                    var playerZone = Zones.getZone(actionPlayer.getZone())
+                    var entity = playerZone.getAdjEntity(actionPlayer.getX(), actionPlayer.getY(), actionPlayer.getDir())
+                    if (entity && entity.canAttack) {
+                        entity.health -= 50
+                        if (entity.health <= 0) {
+                            playerZone.removeEntity(entity)
+                            socket.emit("updateZoneClient", { zone: playerZone.getSerializedZone() });
+                        } else {
+                            this.emit("actionPlayerClient", { action: 'consoleText', text: "Attacking " + entity.name + " Health:" + entity.health })
+                        }
+                    }
                     break;
             }
         }

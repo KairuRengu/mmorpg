@@ -15,12 +15,7 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
     function getEntities() {
         return entities
     }
-    // function loadEntities(pEntities) {
-    //     entities = pEntities
-    // };
-    // function setEntity(index, x, y) {
-    //     actionMap[y * width + x] = index
-    // };
+
     function getSerializedZone() {
         return { name: name, textureMap: textureMap, actionMap: actionMap, overlayMap: overlayMap, width: width, height: height, entities: entities }
     };
@@ -61,56 +56,54 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
         return false
     }
     var canMove = function(x, y, dir) {
-            if (dir == "up" && getTileAction(x, y - 1) == 0) {
-                if (!getEntity(x, y - 1) || getEntity(x, y - 1).canWalk == true) {
-                    return true
-                }
+        if (dir == "up" && getTileAction(x, y - 1) == 0) {
+            if (!getEntity(x, y - 1) || getEntity(x, y - 1).canWalk == true) {
+                return true
             }
-            if (dir == "down" && getTileAction(x, y + 1) == 0) {
-                if (!getEntity(x, y + 1) || getEntity(x, y + 1).canWalk == true) {
-                    return true
-                }
+        }
+        if (dir == "down" && getTileAction(x, y + 1) == 0) {
+            if (!getEntity(x, y + 1) || getEntity(x, y + 1).canWalk == true) {
+                return true
             }
-            if (dir == "left" && getTileAction(x - 1, y) == 0) {
-                if (!getEntity(x - 1, y) || getEntity(x - 1, y).canWalk == true) {
-                    return true
-                }
+        }
+        if (dir == "left" && getTileAction(x - 1, y) == 0) {
+            if (!getEntity(x - 1, y) || getEntity(x - 1, y).canWalk == true) {
+                return true
             }
-            if (dir == "right" && getTileAction(x + 1, y) == 0) {
-                if (!getEntity(x + 1, y) || getEntity(x + 1, y).canWalk == true) {
-                    return true
-                }
+        }
+        if (dir == "right" && getTileAction(x + 1, y) == 0) {
+            if (!getEntity(x + 1, y) || getEntity(x + 1, y).canWalk == true) {
+                return true
             }
             return false
         }
-        // var getEntityAt = function(x, y) {
-        //     var entityIndex = actionMap[y * width + x];
-        //     for (var i = entities.length - 1; i >= 0; i--) {
-        //         if (entities[i].index == entityIndex) {
-        //             return entities[i]
-        //         }
-        //     }
-        //     return false
-        // }
-        // var getCoordTileAdj = function(x, y, dir) {
-        //     if (dir == "up") {
-        //         return { y: (y - 1), x: x };
-        //     }
-        //     if (dir == "down") {
-        //         return { y: (y + 1), x: x };
-        //     }
-        //     if (dir == "left") {
-        //         return { y: y, x: (x - 1) };
-        //     }
-        //     if (dir == "right") {
-        //         return { y: y, x: (x + 1) };
-        //     }
-        // }
+    }
+    var removeEntity = function(ent) {
+        for (var i = entities.length - 1; i >= 0; i--) {
+            if (entities[i] == ent) {
+                entities.splice(i, 1)
+            }
+        }
+    }
+    var getAdjEntity = function(x, y, dir) {
+        if (dir == "up") {
+            return getEntity(x, y - 1)
+        }
+        if (dir == "down") {
+            return getEntity(x, y + 1)
+        }
+        if (dir == "left") {
+            return getEntity(x - 1, y)
+        }
+        if (dir == "right") {
+            return getEntity(x + 1, y)
+        }
+    }
     return {
         canMove: canMove,
-        // loadEntities: loadEntities,
-        // setEntity: setEntity,
-        // getCoordTileAdj: getCoordTileAdj,
+        removeEntity: removeEntity,
+        getAdjEntity: getAdjEntity,
+        getEntity: getEntity,
         getEntities: getEntities,
         getName: getName,
         getTileSize: getTileSize,
@@ -121,7 +114,6 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
         getTileOverlay: getTileOverlay,
         getTileTexture: getTileTexture,
         getTileAction: getTileAction,
-        // getEntityAt: getEntityAt
     }
 }
 try {

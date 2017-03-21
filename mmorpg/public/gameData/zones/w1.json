@@ -73,16 +73,54 @@
         1, 3, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
         1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
         1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-        1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+        1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     ],
     "entities": [{
         "x": 5,
         "y": 2,
         "name": "Box",
         "type": "item",
-        "text": "This Is A Box",
+        "useText": "This Is A Box",
         "tile": 0,
+        "canAttack": false,
         "canWalk": false,
-        "canUse": true
+        "canUse": true,
+        "visible": true
+    }, {
+        "x": 7,
+        "y": 5,
+        "name": "Grass",
+        "type": "item",
+        "useText": "This Is Grass",
+        "tile": 2,
+        "canWalk": false,
+        "canUse": false,
+        "canAttack": true,
+        "visible": true,
+        "health": 100
+    }, {
+        "x": 7,
+        "y": 6,
+        "name": "Grass",
+        "type": "item",
+        "useText": "This Is Grass",
+        "tile": 2,
+        "canWalk": false,
+        "canUse": false,
+        "canAttack": true,
+        "visible": true,
+        "health": 100
+    }, {
+        "x": 3,
+        "y": 21,
+        "x2": 3,
+        "y2": 1,
+        "type": "zoneChange",
+        "tile": 1,
+        "zone": "House",
+        "canAttack": false,
+        "canWalk": true,
+        "canUse": false,
+        "visible": true
     }]
 }

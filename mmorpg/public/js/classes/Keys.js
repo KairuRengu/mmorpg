@@ -13,6 +13,9 @@ var Keys = function(up, left, right, down, z, use, mouseLeft, mouseRight) {
     var onMouseDown = function(e) {
         var that = this
         e.preventDefault();
+        if (e.target.id != "gameCanvas") {
+            return
+        }
         switch (e.buttons) {
             // Controls
             case 1: // Left
@@ -33,6 +36,10 @@ var Keys = function(up, left, right, down, z, use, mouseLeft, mouseRight) {
     var onMouseUp = function(e) {
         var that = this
         e.preventDefault();
+        if (e.target.id != "gameCanvas") {
+            return
+        }
+        console.log(" X: " + e.layerX + " " + "Y: " + e.layerY)
         switch (e.buttons) {
             // Controls
             case 2: // Left
@@ -49,9 +56,6 @@ var Keys = function(up, left, right, down, z, use, mouseLeft, mouseRight) {
                 // console.log("Both Up")
                 break;
         };
-        if (e.target.id == "gameCanvas") {
-            console.log(" X: " + e.layerX + " " + "Y: " + e.layerY)
-        }
     }
     var onKeyDown = function(e) {
         var that = this

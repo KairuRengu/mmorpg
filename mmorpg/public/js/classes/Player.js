@@ -1,5 +1,5 @@
 var Player = function(id) {
-    var name = "X"
+    var name = ""
     var x = 0
     var y = 0
     var direction = "down" //
