@@ -9,6 +9,8 @@
    var consoleList;
    var equiptTable;
    var inventoryTable;
+   var camx
+   var camy
    tiles = new Image();
    tiles.src = "../assets/tiles.png";
    overlays = new Image();
@@ -50,12 +52,19 @@
        window.addEventListener("keyup", onKeyup, false);
        window.addEventListener("mousedown", onMousedown, false);
        window.addEventListener("mouseup", onMouseup, false);
+       window.addEventListener("mousemove", onMousemove, false);
        socket.on("newPlayerClient", newPlayer);
        socket.on("updatePlayersClient", updatePlayers);
        socket.on("actionPlayerClient", actionPlayer);
        socket.on("removePlayerClient", removePlayer);
-       socket.on("updateZoneClient",updateZone);
+       socket.on("updateZoneClient", updateZone);
        socket.on("disconnect", disconnectPlayer);
+   }
+
+   function onMousemove(e) {
+       if (localPlayer) {
+           keys.onMouseMove(e);
+       };
    }
    // Keyboard key down
    function onKeydown(e) {
@@ -151,13 +160,15 @@
        };
        actionPlayer.setSerializedPlayer(data.player);
    };
-   function updateZone(data){
-    if (data.zone.name == localPlayer.getZone()){
-      zone.setSerializedZone(data.zone)
-    }
+
+   function updateZone(data) {
+       if (data.zone.name == localPlayer.getZone()) {
+           zone.setSerializedZone(data.zone)
+       }
    }
-      function updateInventory(data){
-    localPlayer.setInventory(data.inventory)
+
+   function updateInventory(data) {
+       localPlayer.setInventory(data.inventory)
    }
 
    function actionPlayer(data) {
@@ -200,8 +211,11 @@
     ** GAME ANIMATION LOOP
     **************************************************/
    function animate() {
+       startCamera();
+       drawWorld();
+       drawPlayers();
+       drawInteractive();
        update();
-       draw();
        window.requestAnimFrame(animate);
    };
    /**************************************************
@@ -279,33 +293,61 @@
        if (!keys.left & keys.right) {
            move("right")
        };
+       var pointX = (Math.floor((keys.mouseX / zone.getTileSize())) + camx / 32)
+       var pointY = (Math.floor((keys.mouseY / zone.getTileSize())) + camy / 32)
+       if (keys.mouseLeft) {
+           if (localPlayer.getCanClickL()) {
+               console.log("Clicked L ATTACK - X: " + pointX + " Y: " + pointY)
+               localPlayer.setCanClickL(false);
+               if (localPlayer.getCanAction()) {
+                   socket.emit("actionPlayerServer", { action: 'attack', player: localPlayer.getSerializedPlayer(), pointX: pointX, pointY: pointY });
+                   localPlayer.setCanAction(false);
+                   setTimeout(function() { actionReset() }, 300);
+               }
+           }
+       } else {
+           localPlayer.setCanClickL(true);
+       }
+       if (keys.mouseRight) {
+           if (localPlayer.getCanClickR()) {
+               console.log("Clicked R USE - X: " + Math.floor(keys.mouseX / zone.getTileSize()) + " Y: " + Math.floor(keys.mouseY / zone.getTileSize()))
+               localPlayer.setCanClickR(false);
+               if (localPlayer.getCanAction()) {
+                   socket.emit("actionPlayerServer", { action: 'use', player: localPlayer.getSerializedPlayer(), pointX: pointX, pointY: pointY });
+                   localPlayer.setCanAction(false);
+                   setTimeout(function() { actionReset() }, 300);
+               }
+           }
+       } else {
+           localPlayer.setCanClickR(true);
+       }
        if ((prevX != localPlayer.getX() || prevY != localPlayer.getY() || prevDir != localPlayer.getDir())) {
            socket.emit("actionPlayerServer", { action: 'move', player: localPlayer.getSerializedPlayer() });
-       };
-       if (keys.mouseLeft) {
-           if (localPlayer.getCanAction()) {
-               socket.emit("actionPlayerServer", { action: 'attack', player: localPlayer.getSerializedPlayer() });
-               localPlayer.setCanAction(false);
-               setTimeout(function() { actionReset() }, 300);
-           }
-       };
-       if (keys.use) {
-           if (localPlayer.getCanAction()) {
-               socket.emit("actionPlayerServer", { action: 'use', player: localPlayer.getSerializedPlayer() });
-               localPlayer.setCanAction(false);
-               setTimeout(function() { actionReset() }, 300);
-           }
        };
    };
    /**************************************************
     ** GAME DRAW
     **************************************************/
-   function draw() {
-       ctx.clearRect(0, 0, canvas.width, canvas.height);
+   function startCamera() {
        //
+       ctx.clearRect(0, 0, canvas.width, canvas.height);
        var xCoord = localPlayer.getX()
        var yCoord = localPlayer.getY()
-           //Draw Textures
+           //CAMERA.
+       ctx.setTransform(1, 0, 0, 1, 0, 0);
+       camx = (32 * xCoord - ((canvas.width) / 2))
+       camy = (32 * yCoord - ((canvas.height) / 2))
+       var endBoundX = (zone.getWidth() * 32) - canvas.width
+       var endBoundY = (zone.getHeight() * 32) - canvas.height
+       if (camx >= endBoundX) { camx = endBoundX }
+       if (camy >= endBoundY) { camy = endBoundY }
+       if (camy <= 0) { camy = 0 }
+       if (camx <= 0) { camx = 0 }
+       ctx.translate(-camx, -camy);
+   };
+
+   function drawWorld() {
+       //Draw Textures
        for (var x = 0; x < zone.getWidth(); x++) {
            for (var y = 0; y < zone.getHeight(); y++) {
                ctx.drawImage(tiles, zone.getTileTexture(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
@@ -324,17 +366,10 @@
                ctx.drawImage(entities, entity[i].tile * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), entity[i].x * zone.getTileSize(), entity[i].y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
            }
        }
-       //CAMERA.
-       ctx.setTransform(1, 0, 0, 1, 0, 0);
-       var camx = (32 * xCoord - ((canvas.width) / 2))
-       var camy = (32 * yCoord - ((canvas.height) / 2))
-       var endBoundX = (zone.getWidth() * 32) - canvas.width
-       var endBoundY = (zone.getHeight() * 32) - canvas.height
-       if (camx >= endBoundX) { camx = endBoundX }
-       if (camy >= endBoundY) { camy = endBoundY }
-       if (camy <= 0) { camy = 0 }
-       if (camx <= 0) { camx = 0 }
-       ctx.translate(-camx, -camy);
+       //
+   }
+
+   function drawPlayers() {
        // Draw the remote players
        for (var i = 0; i < remotePlayers.length; i++) {
            if (remotePlayers[i].getZone() == localPlayer.getZone()) {
@@ -343,7 +378,29 @@
        };
        // Draw the local player
        drawPlayer(localPlayer, ctx)
-   };
+   }
+
+   function drawInteractive() {
+       var mouseXVal = (zone.getTileSize() * Math.floor(keys.mouseX / zone.getTileSize()) + camx)
+       var mouseYVal = (zone.getTileSize() * Math.floor(keys.mouseY / zone.getTileSize()) + camy)
+       if (keys.mouseX > canvas.width) {
+           mouseXVal = (canvas.width - zone.getTileSize()) + camx
+       }
+       if (keys.mouseY > canvas.height) {
+           mouseYVal = (canvas.height - zone.getTileSize()) + camy
+       }
+       ctx.strokeStyle = 'rgba(255,255,255, 1)';
+       ctx.lineWidth = 2;
+       ctx.beginPath();
+       ctx.moveTo(16 + localPlayer.getX() * 32, 16 + localPlayer.getY() * 32);
+       ctx.lineTo(mouseXVal, mouseYVal);
+       ctx.stroke();
+       //
+       ctx.strokeStyle = 'rgba(255, 0, 0, 0.75)';
+       ctx.beginPath();
+       ctx.rect(mouseXVal, mouseYVal, 32, 32);
+       ctx.stroke();
+   }
    /**************************************************
     ** GAME HELPER FUNCTIONS
     **************************************************/

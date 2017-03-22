@@ -1,7 +1,7 @@
 /**************************************************
  ** GAME KEYBOARD CLASS
  **************************************************/
-var Keys = function(up, left, right, down, z, use, mouseLeft, mouseRight) {
+var Keys = function(up, left, right, down, z, use, mouseLeft, mouseRight, mouseX, mouseY) {
     var up = up || false
     var left = left || false
     var right = right || false
@@ -10,12 +10,21 @@ var Keys = function(up, left, right, down, z, use, mouseLeft, mouseRight) {
     var use = use || false
     var mouseLeft = mouseLeft || false
     var mouseRight = mouseRight || false
+    var mouseX = mouseX || false
+    var mouseY = mouseY || false
+    var mouse = {}
+    var onMouseMove = function(e) {
+        var that = this
+        that.mouse = e
+        that.mouseX = e.layerX
+        that.mouseY = e.layerY
+    }
     var onMouseDown = function(e) {
         var that = this
         e.preventDefault();
-        if (e.target.id != "gameCanvas") {
-            return
-        }
+        // if (e.target.id != "gameCanvas") {
+        //     return
+        // }
         switch (e.buttons) {
             // Controls
             case 1: // Left
@@ -36,10 +45,9 @@ var Keys = function(up, left, right, down, z, use, mouseLeft, mouseRight) {
     var onMouseUp = function(e) {
         var that = this
         e.preventDefault();
-        if (e.target.id != "gameCanvas") {
-            return
-        }
-        console.log(" X: " + e.layerX + " " + "Y: " + e.layerY)
+        // if (e.target.id != "gameCanvas") {
+        //     return
+        // }
         switch (e.buttons) {
             // Controls
             case 2: // Left
@@ -112,6 +120,10 @@ var Keys = function(up, left, right, down, z, use, mouseLeft, mouseRight) {
         down: down,
         z: z,
         use: use,
+        mouse:mouse,
+        mouseX: mouseX,
+        mouseY: mouseY,
+        onMouseMove: onMouseMove,
         mouseRight: mouseRight,
         mouseLeft: mouseLeft,
         onKeyDown: onKeyDown,

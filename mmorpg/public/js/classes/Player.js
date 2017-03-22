@@ -7,6 +7,8 @@ var Player = function(id) {
     var moveSpeed = 100 //
     var canAction = true //
     var canMove = true //
+    var canClickL = true //
+    var canClickR = true //
     var equipt = []
     var inventory = []
     var zone = ""
@@ -82,6 +84,18 @@ var Player = function(id) {
     var setCanAction = function(bool) {
         canAction = bool;
     };
+    var getCanClickL = function() {
+        return canClickL;
+    };
+    var setCanClickL = function(bool) {
+        canClickL = bool;
+    };
+    var getCanClickR = function() {
+        return canClickR;
+    };
+    var setCanClickR = function(bool) {
+        canClickR = bool;
+    };
     var getCanMove = function() {
         return canMove;
     };
@@ -118,6 +132,10 @@ var Player = function(id) {
         getMoveSpeed: getMoveSpeed,
         getCanAction: getCanAction,
         setCanAction: setCanAction,
+        getCanClickL:getCanClickL,
+        setCanClickL:setCanClickL,
+        getCanClickR:getCanClickR,
+        setCanClickR:setCanClickR,
         getDir: getDir,
         setDir: setDir,
         setEquipt: setEquipt,
