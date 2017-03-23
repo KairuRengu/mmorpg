@@ -206,6 +206,7 @@
        var item = document.createElement('li');
        item.appendChild(document.createTextNode(text));
        consoleList.appendChild(item);
+       consoleList.scrollTop = consoleList.scrollHeight - consoleList.clientHeight;
    }
    /**************************************************
     ** GAME ANIMATION LOOP
@@ -297,7 +298,7 @@
        var pointY = (Math.floor((keys.mouseY / zone.getTileSize())) + camy / 32)
        if (keys.mouseLeft) {
            if (localPlayer.getCanClickL()) {
-               console.log("Clicked L ATTACK - X: " + pointX + " Y: " + pointY)
+               console.log("Clicked L ATTACK")
                localPlayer.setCanClickL(false);
                if (localPlayer.getCanAction()) {
                    socket.emit("actionPlayerServer", { action: 'attack', player: localPlayer.getSerializedPlayer(), pointX: pointX, pointY: pointY });
@@ -310,7 +311,7 @@
        }
        if (keys.mouseRight) {
            if (localPlayer.getCanClickR()) {
-               console.log("Clicked R USE - X: " + Math.floor(keys.mouseX / zone.getTileSize()) + " Y: " + Math.floor(keys.mouseY / zone.getTileSize()))
+               console.log("Clicked R USE")
                localPlayer.setCanClickR(false);
                if (localPlayer.getCanAction()) {
                    socket.emit("actionPlayerServer", { action: 'use', player: localPlayer.getSerializedPlayer(), pointX: pointX, pointY: pointY });

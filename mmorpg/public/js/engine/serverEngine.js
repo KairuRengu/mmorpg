@@ -121,6 +121,7 @@ module.exports = function(app, UUID, socket, Zones) {
                             entity.health -= 40
                             if (entity.health <= 0) {
                                 playerZone.removeEntity(entity)
+                                this.emit("actionPlayerClient", { action: 'consoleText', text: "Killed " + entity.name})
                                 socket.emit("updateZoneClient", { zone: playerZone.getSerializedZone() });
                             } else {
                                 this.emit("actionPlayerClient", { action: 'consoleText', text: "Attacking " + entity.name + " Health:" + entity.health })
