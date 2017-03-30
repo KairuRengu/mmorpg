@@ -1,9 +1,12 @@
 Player = require("../classes/Player").Player;
 var DB = require('../../../models/models');
-//////////////////////////////////////////////////////////////////////////////////////////
-//Singleton
+var updateTicker = 0
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //Singleton
 module.exports = function(app, UUID, socket, Zones) {
+    tickUpdater() 
         setInterval(function() { tickUpdater() }, 1000);
+
         socket.sockets.on('connection', function(client) {
             console.log('Unknown Player Connected');
             client.on("login", playerLogin);
@@ -11,9 +14,16 @@ module.exports = function(app, UUID, socket, Zones) {
             client.on("getPlayersServer", getPlayerList);
             client.on("actionPlayerServer", actionPlayer);
         });
-
         function tickUpdater() {
-            console.log("tick")
+            // console.log("Tick: " + updateTicker)
+            for (var zonesIndex = Zones.getZones().length - 1; zonesIndex >= 0; zonesIndex--) {
+                var updated = Zones.getZones()[zonesIndex].respawnEntities(updateTicker)
+                if (updated == true){
+                   socket.emit("updateZoneClient", { zone: Zones.getZones()[zonesIndex].getSerializedZone() });  
+                }
+               
+            }
+            updateTicker += 1
         }
 
         function playerLogin(data) {
@@ -100,37 +110,34 @@ module.exports = function(app, UUID, socket, Zones) {
                         //
                     var playerZone = Zones.getZone(actionPlayer.getZone())
                     var entity = playerZone.getEntity(data.pointX, data.pointY)
-                    if (entity && entity.canUse) {
-                        if (coordDistance <= 1) {
-                            this.emit("actionPlayerClient", { action: 'use', success: true, entity: entity.name })
-                            playerZone.removeEntity(entity)
-                            socket.emit("updateZoneClient", { zone: playerZone.getSerializedZone() });
-                        } else {
-                            this.emit("actionPlayerClient", { action: 'use', success: false, entity: entity.name })
-                        }
+                    if (entity && entity.canUse && coordDistance == 1) {
+                        this.emit("actionPlayerClient", { action: 'use', success: true, entity: entity.name })
+                        playerZone.removeEntity(entity)
+                        socket.emit("updateZoneClient", { zone: playerZone.getSerializedZone() });
+                    } else {
+                        this.emit("actionPlayerClient", { action: 'use', success: false })
                     }
                     break;
                 case "attack":
-                    // var Xsum = (data.player.x - data.pointX)
-                    // var Ysum = (data.player.y - data.pointY)
-                    // var coordDistance = Math.floor(Math.sqrt(Xsum * Xsum + Ysum * Ysum))
-                    //     //
-                    // var playerZone = Zones.getZone(actionPlayer.getZone())
-                    // var entity = playerZone.getEntity(data.pointX, data.pointY)
-                    // if (entity && entity.canAttack) {
-                    //     if (coordDistance > 1) {
-                    //         this.emit("actionPlayerClient", { action: 'attack', success: false, entity: entity.name })
-                    //     } else {
-                    //         entity.health -= 40
-                    //         if (entity.health <= 0) {
-                    //             playerZone.removeEntity(entity)
-                    //             this.emit("actionPlayerClient", { action: 'kill', success: true, entity: entity.name })
-                    //             socket.emit("updateZoneClient", { zone: playerZone.getSerializedZone() });
-                    //         } else {
-                    //             this.emit("actionPlayerClient", { action: 'attack', success: true, entity: entity.name })
-                    //         }
-                    //     }
-                    // }
+                    var Xsum = (data.player.x - data.pointX)
+                    var Ysum = (data.player.y - data.pointY)
+                    var coordDistance = Math.floor(Math.sqrt(Xsum * Xsum + Ysum * Ysum))
+                        //
+                    var playerZone = Zones.getZone(actionPlayer.getZone())
+                    var entity = playerZone.getEntity(data.pointX, data.pointY)
+                    if (entity && entity.canAttack && coordDistance == 1) {
+                        entity.health -= 25
+                        if (entity.health <= 0) {
+                            playerZone.removeEntity(entity)
+                            this.emit("actionPlayerClient", { action: 'kill', success: true, entity: entity.name })
+                            socket.emit("updateZoneClient", { zone: playerZone.getSerializedZone() });
+                        } else {
+                            this.emit("actionPlayerClient", { action: 'attack', success: true, entity: entity.name })
+                            socket.emit("updateZoneClient", { zone: playerZone.getSerializedZone() });
+                        }
+                    } else {
+                        this.emit("actionPlayerClient", { action: 'attack', success: false })
+                    }
                     break;
             }
         }

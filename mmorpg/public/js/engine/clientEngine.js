@@ -118,7 +118,7 @@
        console.log('Mana:  ' + localPlayer.getMana());
        console.log("----------------------------------------------")
            //
-       zone = new Zone(data.zone.name, data.zone.width, data.zone.height, data.zone.textureMap, data.zone.overlayMap, data.zone.actionMap, data.zone.entities)
+       zone = new Zone(data.zone.name, data.zone.width, data.zone.height, data.zone.textureMap, data.zone.overlayMap, data.zone.actionMap, data.zone.entities, [])
            //
        var item = document.createElement('li');
        item.appendChild(document.createTextNode(localPlayer.getName() + " - " + localPlayer.getID()));
@@ -184,18 +184,14 @@
                if (data.success == true) {
                    consoleText("Used " + data.entity)
                    playSound("use")
-               } else {
-                   consoleText("Could Not Reach " + data.entity)
                }
                break
            case "attack":
                if (data.success == true) {
                    consoleText("Attacked " + data.entity)
                    playSound("hit")
-               }
-               else
-               {
-               	playSound("swing")
+               } else {
+                   playSound("swing")
                }
                break
            case "kill":
@@ -238,6 +234,7 @@
    function animate() {
        startCamera();
        drawWorld();
+       drawEntities()
        drawPlayers();
        drawInteractive();
        update();
@@ -322,7 +319,6 @@
        var pointY = (Math.floor((keys.mouseY / zone.getTileSize())) + camy / 32)
        if (keys.mouseLeft) {
            if (localPlayer.getCanClickL()) {
-               
                localPlayer.setCanClickL(false);
                if (localPlayer.getCanAction()) {
                    socket.emit("actionPlayerServer", { action: 'attack', player: localPlayer.getSerializedPlayer(), pointX: pointX, pointY: pointY });
@@ -357,7 +353,7 @@
                sound.src = "../audio/hit.wav";
                break;
            case "swing":
-               sound.src = "../audio/swing "+Math.floor((Math.random() * 4) + 1)+".wav";
+               sound.src = "../audio/swing " + Math.floor((Math.random() * 4) + 1) + ".wav";
                break;
            case "use":
                sound.src = "../audio/use.wav";
@@ -389,6 +385,23 @@
        ctx.translate(-camx, -camy);
    };
 
+   function drawEntities() {
+       //Draw Entities
+       var entity = zone.getEntities()
+       for (var i = entity.length - 1; i >= 0; i--) {
+           if (entity[i].visible == true) {
+               ctx.drawImage(entities, entity[i].tile * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), entity[i].x * zone.getTileSize(), entity[i].y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
+               if (entity[i].canAttack && entity[i].health != 100) {
+                   ctx.fillStyle = "#FF0000";
+                   ctx.fillRect(zone.getTileSize() * entity[i].x, zone.getTileSize() * entity[i].y, 32, 4);
+                   ctx.fillStyle = "#00FF00";
+                   var healthBar = Math.floor(32 * (entity[i].health / 100))
+                   ctx.fillRect(zone.getTileSize() * entity[i].x, zone.getTileSize() * entity[i].y, healthBar, 4);
+               }
+           }
+       }
+   }
+
    function drawWorld() {
        //Draw Textures
        for (var x = 0; x < zone.getWidth(); x++) {
@@ -402,14 +415,6 @@
                ctx.drawImage(overlays, zone.getTileOverlay(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
            }
        }
-       //Draw Entities
-       var entity = zone.getEntities()
-       for (var i = entity.length - 1; i >= 0; i--) {
-           if (entity[i].visible == true) {
-               ctx.drawImage(entities, entity[i].tile * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), entity[i].x * zone.getTileSize(), entity[i].y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
-           }
-       }
-       //
    }
 
    function drawPlayers() {

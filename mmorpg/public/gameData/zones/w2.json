@@ -39,7 +39,24 @@
         1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     ],
-    "entities": [{
+    "entities": [],
+    "defaultEntities": [{
+        "id": 0,
+        "regen": 10,
+        "x": 2,
+        "y": 2,
+        "name": "Rock",
+        "type": "item",
+        "useText": "This Is A Rock",
+        "tile": 3,
+        "canWalk": false,
+        "canUse": false,
+        "canAttack": true,
+        "visible": true,
+        "health": 100
+    }, {
+        "id": 1,
+        "regen": 0,
         "x": 3,
         "y": 0,
         "x2": 3,
@@ -53,18 +70,8 @@
         "canUse": false,
         "visible": true
     }, {
-        "x": 2,
-        "y": 2,
-        "name": "Rock",
-        "type": "item",
-        "useText": "This Is A Rock",
-        "tile": 3,
-        "canWalk": false,
-        "canUse": false,
-        "canAttack": true,
-        "visible": true,
-        "health": 100
-    }, {
+        "id": 2,
+        "regen": 10,
         "x": 2,
         "y": 3,
         "name": "Rock",
@@ -77,6 +84,8 @@
         "visible": true,
         "health": 100
     }, {
+        "id": 3,
+        "regen": 10,
         "x": 3,
         "y": 2,
         "name": "Rock",
@@ -89,6 +98,8 @@
         "visible": true,
         "health": 100
     }, {
+        "id": 4,
+        "regen": 10,
         "x": 3,
         "y": 3,
         "name": "Rock",

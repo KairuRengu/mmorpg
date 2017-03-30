@@ -75,9 +75,10 @@
         1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
         1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     ],
-    "entities": [{
-        "enabled":true,
-        "regen":true,
+    "entities": [],
+    "defaultEntities": [{
+        "id": 0,
+        "regen": 10,
         "x": 5,
         "y": 3,
         "name": "Chest",
@@ -88,10 +89,9 @@
         "canWalk": false,
         "canUse": true,
         "visible": true
-    },
-    {
-        "enabled":true,
-        "regen":true,
+    }, {
+        "id": 1,
+        "regen": 10,
         "x": 5,
         "y": 4,
         "name": "Chest",
@@ -102,10 +102,9 @@
         "canWalk": false,
         "canUse": true,
         "visible": true
-    },
-    {
-        "enabled":true,
-        "regen":true,
+    }, {
+        "id": 2,
+        "regen": 10,
         "x": 5,
         "y": 2,
         "name": "Chest",
@@ -117,8 +116,8 @@
         "canUse": true,
         "visible": true
     }, {
-        "enabled":true,
-        "regen":true,
+        "id": 3,
+        "regen": 10,
         "x": 7,
         "y": 5,
         "name": "Grass",
@@ -131,8 +130,8 @@
         "visible": true,
         "health": 100
     }, {
-        "enabled":true,
-        "regen":true,
+        "id": 4,
+        "regen": 10,
         "x": 7,
         "y": 6,
         "name": "Grass",
@@ -145,12 +144,13 @@
         "visible": true,
         "health": 100
     }, {
-        "enabled":true,
-        "regen":true,
+        "id": 5,
+        "regen": 10,
         "x": 3,
         "y": 21,
         "x2": 3,
         "y2": 1,
+        "name": "Zone Change",
         "type": "zoneChange",
         "tile": 1,
         "zone": "House",
