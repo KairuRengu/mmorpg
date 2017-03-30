@@ -196,7 +196,7 @@
                break
            case "kill":
                if (data.success == true) {
-                   consoleText("Killed " + data.entity)
+                   consoleText("Destroyed " + data.entity)
                    playSound("break")
                }
                break
@@ -437,14 +437,14 @@
        if (keys.mouseY > canvas.height) {
            mouseYVal = (canvas.height - zone.getTileSize()) + camy
        }
-       ctx.strokeStyle = 'rgba(255,255,255, 1)';
+       ctx.strokeStyle = 'rgba(255,255,255, 0.25)';
        ctx.lineWidth = 2;
        ctx.beginPath();
        ctx.moveTo(16 + localPlayer.getX() * 32, 16 + localPlayer.getY() * 32);
-       ctx.lineTo(mouseXVal, mouseYVal);
+       ctx.lineTo(mouseXVal + 16, mouseYVal + 16);
        ctx.stroke();
        //
-       ctx.strokeStyle = 'rgba(255, 0, 0, 0.75)';
+       ctx.strokeStyle = 'rgba(255, 0, 0, 0.50)';
        ctx.beginPath();
        ctx.rect(mouseXVal, mouseYVal, 32, 32);
        ctx.stroke();

@@ -20,20 +20,27 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
     function respawnEntities(tick) {
         var updated = false
         for (var i = defaultEntites.length - 1; i >= 0; i--) {
+            if (!!entities.regen) {
+                continue }
             var exists = false
             for (var x = entities.length - 1; x >= 0; x--) {
                 if (defaultEntites[i].id == entities[x].id) {
                     exists = true
                 }
             }
-            if ((exists == false && defaultEntites[i].regen != 0 && tick % defaultEntites[i].regen == 0) || tick == 0) {
-                entities.push(JSON.parse(JSON.stringify(defaultEntites[i])))
-                updated = true
+            //
+            if (exists == false) {
+                if (defaultEntites[i].regenCount == 0) {
+                    entities.push(JSON.parse(JSON.stringify(defaultEntites[i])))
+                    defaultEntites[i].regenCount = defaultEntites[i].regen
+                    updated = true
+                } else {
+                    defaultEntites[i].regenCount -= 1;
+                }
             }
         }
         return updated
     }
-
     function getSerializedZone() {
         return { name: name, textureMap: textureMap, actionMap: actionMap, overlayMap: overlayMap, width: width, height: height, entities: entities }
     };

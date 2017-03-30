@@ -33,6 +33,7 @@ var Player = function(id) {
     var getHealth = function() {
         return health;
     };
+   
     var setHealth = function(playerHealth) {
         health = playerHealth;
     };
