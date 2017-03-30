@@ -1,11 +1,11 @@
-var Zone = function(name, width, height, textureMap, overlayMap, actionMap, entities) {
+var Zone = function(name, width, height, textureMap, overlayMap, actionMap, entities, defaultEntites) {
     var name = name
     var tileSize = 32
     var textureMap = textureMap
     var overlayMap = overlayMap
     var actionMap = actionMap
-    var defaultEntities = defaultEntities
     var entities = entities
+    var defaultEntites = defaultEntites
     var width = width
     var height = height
         //
@@ -15,6 +15,23 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
 
     function getEntities() {
         return entities
+    }
+
+    function respawnEntities(tick) {
+        var updated = false
+        for (var i = defaultEntites.length - 1; i >= 0; i--) {
+            var exists = false
+            for (var x = entities.length - 1; x >= 0; x--) {
+                if (defaultEntites[i].id == entities[x].id) {
+                    exists = true
+                }
+            }
+            if ((exists == false && defaultEntites[i].regen != 0 && tick % defaultEntites[i].regen == 0) || tick == 0) {
+                entities.push(JSON.parse(JSON.stringify(defaultEntites[i])))
+                updated = true
+            }
+        }
+        return updated
     }
 
     function getSerializedZone() {
@@ -115,6 +132,7 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
         getTileOverlay: getTileOverlay,
         getTileTexture: getTileTexture,
         getTileAction: getTileAction,
+        respawnEntities: respawnEntities
     }
 }
 try {
