@@ -76,17 +76,49 @@
         1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     ],
     "entities": [{
+        "enabled":true,
+        "regen":true,
+        "x": 5,
+        "y": 3,
+        "name": "Chest",
+        "type": "item",
+        "useText": "This Is A Chest",
+        "tile": 0,
+        "canAttack": false,
+        "canWalk": false,
+        "canUse": true,
+        "visible": true
+    },
+    {
+        "enabled":true,
+        "regen":true,
+        "x": 5,
+        "y": 4,
+        "name": "Chest",
+        "type": "item",
+        "useText": "This Is A Chest",
+        "tile": 0,
+        "canAttack": false,
+        "canWalk": false,
+        "canUse": true,
+        "visible": true
+    },
+    {
+        "enabled":true,
+        "regen":true,
         "x": 5,
         "y": 2,
-        "name": "Box",
+        "name": "Chest",
         "type": "item",
-        "useText": "This Is A Box",
+        "useText": "This Is A Chest",
         "tile": 0,
         "canAttack": false,
         "canWalk": false,
         "canUse": true,
         "visible": true
     }, {
+        "enabled":true,
+        "regen":true,
         "x": 7,
         "y": 5,
         "name": "Grass",
@@ -99,6 +131,8 @@
         "visible": true,
         "health": 100
     }, {
+        "enabled":true,
+        "regen":true,
         "x": 7,
         "y": 6,
         "name": "Grass",
@@ -111,6 +145,8 @@
         "visible": true,
         "health": 100
     }, {
+        "enabled":true,
+        "regen":true,
         "x": 3,
         "y": 21,
         "x2": 3,

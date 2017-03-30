@@ -180,6 +180,30 @@
            case "consoleText":
                consoleText(data.text)
                break
+           case "use":
+               if (data.success == true) {
+                   consoleText("Used " + data.entity)
+                   playSound("use")
+               } else {
+                   consoleText("Could Not Reach " + data.entity)
+               }
+               break
+           case "attack":
+               if (data.success == true) {
+                   consoleText("Attacked " + data.entity)
+                   playSound("hit")
+               }
+               else
+               {
+               	playSound("swing")
+               }
+               break
+           case "kill":
+               if (data.success == true) {
+                   consoleText("Killed " + data.entity)
+                   playSound("break")
+               }
+               break
        }
    };
 
@@ -298,7 +322,7 @@
        var pointY = (Math.floor((keys.mouseY / zone.getTileSize())) + camy / 32)
        if (keys.mouseLeft) {
            if (localPlayer.getCanClickL()) {
-               console.log("Clicked L ATTACK")
+               
                localPlayer.setCanClickL(false);
                if (localPlayer.getCanAction()) {
                    socket.emit("actionPlayerServer", { action: 'attack', player: localPlayer.getSerializedPlayer(), pointX: pointX, pointY: pointY });
@@ -311,12 +335,11 @@
        }
        if (keys.mouseRight) {
            if (localPlayer.getCanClickR()) {
-               console.log("Clicked R USE")
                localPlayer.setCanClickR(false);
                if (localPlayer.getCanAction()) {
                    socket.emit("actionPlayerServer", { action: 'use', player: localPlayer.getSerializedPlayer(), pointX: pointX, pointY: pointY });
                    localPlayer.setCanAction(false);
-                   setTimeout(function() { actionReset() }, 300);
+                   setTimeout(function() { actionReset() }, 100);
                }
            }
        } else {
@@ -326,6 +349,25 @@
            socket.emit("actionPlayerServer", { action: 'move', player: localPlayer.getSerializedPlayer() });
        };
    };
+
+   function playSound(soundName) {
+       var sound = new Audio();
+       switch (soundName) {
+           case "hit":
+               sound.src = "../audio/hit.wav";
+               break;
+           case "swing":
+               sound.src = "../audio/swing "+Math.floor((Math.random() * 4) + 1)+".wav";
+               break;
+           case "use":
+               sound.src = "../audio/use.wav";
+               break;
+           case "break":
+               sound.src = "../audio/break.wav";
+               break;
+       }
+       sound.play();
+   }
    /**************************************************
     ** GAME DRAW
     **************************************************/

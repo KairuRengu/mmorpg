@@ -4,6 +4,7 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
     var textureMap = textureMap
     var overlayMap = overlayMap
     var actionMap = actionMap
+    var defaultEntities = defaultEntities
     var entities = entities
     var width = width
     var height = height
