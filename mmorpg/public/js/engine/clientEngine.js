@@ -141,10 +141,10 @@
            row.insertCell(i).innerHTML = '<img src="./assets/items/' + localPlayer.getInventory()[i] + '.png">';
        }
        setTimeout(function() { animate(); }, 3000);
-       setInterval(function() {
-           var k = localPlayer.getHealth();
-           localPlayer.setHealth(k -= 10);
-       }, 1000);
+       // setInterval(function() {
+       //     var k = localPlayer.getHealth();
+       //     localPlayer.setHealth(k -= 10);
+       // }, 1000);
    };
 
    function newPlayer(data) {
