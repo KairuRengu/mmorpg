@@ -11,6 +11,7 @@
    var inventoryTable;
    var camx
    var camy
+   var run = true;
    tiles = new Image();
    tiles.src = "../assets/tiles.png";
    overlays = new Image();
@@ -39,9 +40,13 @@
        keys = new Keys();
        remotePlayers = [];
        localPlayer = [];
-       ctx.font = "70px Arial";
+       ctx.beginPath();
+       ctx.rect(0, 0, canvas.width, canvas.height);
+       ctx.fillStyle = "white";
+       ctx.fill();
+       ctx.font = "50px Arial";
+       ctx.fillStyle = "black";
        ctx.fillText("Loading Jankscape", 50, 50);
-       ctx.font = "20px Arial";
        loadPlayerData(data)
        socket.emit("getPlayersServer");
        setEventHandlers();
@@ -135,7 +140,11 @@
        for (var i = 0; i <= localPlayer.getInventory().length - 1; i++) {
            row.insertCell(i).innerHTML = '<img src="./assets/items/' + localPlayer.getInventory()[i] + '.png">';
        }
-       animate();
+       setTimeout(function() { animate(); }, 3000);
+       setInterval(function() {
+           var k = localPlayer.getHealth();
+           localPlayer.setHealth(k -= 10);
+       }, 1000);
    };
 
    function newPlayer(data) {
@@ -232,13 +241,25 @@
     ** GAME ANIMATION LOOP
     **************************************************/
    function animate() {
-       startCamera();
-       drawWorld();
-       drawEntities()
-       drawPlayers();
-       drawInteractive();
-       update();
-       window.requestAnimFrame(animate);
+       if (localPlayer.getHealth() <= 0) {
+           run = false
+           ctx.beginPath();
+           ctx.rect(0, 0, canvas.width, canvas.height);
+           ctx.fillStyle = "white";
+           ctx.fill();
+           ctx.font = "50px Arial";
+           ctx.fillStyle = "black";
+           ctx.fillText("You Died", 50, 50);
+       }
+       if (run == true) {
+           startCamera();
+           drawWorld();
+           drawEntities()
+           drawPlayers();
+           drawInteractive();
+           update();
+           window.requestAnimFrame(animate);
+       }
    };
    /**************************************************
     ** GAME UPDATE

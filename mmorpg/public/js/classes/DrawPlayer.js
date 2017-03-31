@@ -5,6 +5,7 @@
          var yCoord = player.getY() * 32
          var canAction = player.getCanAction()
          var direction = player.getDir()
+         ctx.font = "50px Arial";
          ctx.fillStyle = "#000000";
          ctx.fillText(player.getName(), xCoord, yCoord + 48);
          ctx.fillStyle = "#FF0000";
