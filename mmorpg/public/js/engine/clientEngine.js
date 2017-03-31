@@ -248,7 +248,13 @@
        localPlayer.setDir(dir)
        switch (dir) {
            case "left":
+               var destPoint = zone.getAdjCoord(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir())
                if (zone.canMove(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir()) && localPlayer.getCanMove()) {
+                   for (var i = remotePlayers.length - 1; i >= 0; i--) {
+                       if (destPoint.x == remotePlayers[i].getX() && destPoint.y == remotePlayers[i].getY()) {
+                           return
+                       }
+                   };
                    var newX = localPlayer.getX()
                    localPlayer.setCanMove(false);
                    newX -= 1
@@ -258,7 +264,13 @@
                return
                break;
            case "right":
+               var destPoint = zone.getAdjCoord(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir())
                if (zone.canMove(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir()) && localPlayer.getCanMove()) {
+                   for (var i = remotePlayers.length - 1; i >= 0; i--) {
+                       if (destPoint.x == remotePlayers[i].getX() && destPoint.y == remotePlayers[i].getY()) {
+                           return
+                       }
+                   };
                    var newX = localPlayer.getX()
                    localPlayer.setCanMove(false);
                    newX += 1
@@ -268,7 +280,13 @@
                return
                break;
            case "up":
+               var destPoint = zone.getAdjCoord(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir())
                if (zone.canMove(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir()) && localPlayer.getCanMove()) {
+                   for (var i = remotePlayers.length - 1; i >= 0; i--) {
+                       if (destPoint.x == remotePlayers[i].getX() && destPoint.y == remotePlayers[i].getY()) {
+                           return
+                       }
+                   };
                    var newY = localPlayer.getY()
                    localPlayer.setCanMove(false);
                    newY -= 1
@@ -278,7 +296,13 @@
                return
                break;
            case "down":
+               var destPoint = zone.getAdjCoord(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir())
                if (zone.canMove(localPlayer.getX(), localPlayer.getY(), localPlayer.getDir()) && localPlayer.getCanMove()) {
+                   for (var i = remotePlayers.length - 1; i >= 0; i--) {
+                       if (destPoint.x == remotePlayers[i].getX() && destPoint.y == remotePlayers[i].getY()) {
+                           return
+                       }
+                   };
                    var newY = localPlayer.getY()
                    localPlayer.setCanMove(false);
                    newY += 1

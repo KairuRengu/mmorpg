@@ -103,6 +103,24 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
             return false
         }
     }
+        var getAdjCoord = function(x, y, dir) {
+        if (dir == "up" ) {
+                return {x:x,y:y-1}
+            
+        }
+        if (dir == "down" ) {
+                return {x:x,y:y+1}
+            
+        }
+        if (dir == "left" ) {
+                return {x:x-1,y:y}
+            
+        }
+       if (dir == "right" ) {
+                return {x:x+1,y:y}
+            
+        }
+    }
     var removeEntity = function(ent) {
         for (var i = entities.length - 1; i >= 0; i--) {
             if (entities[i] == ent) {
@@ -139,7 +157,8 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
         getTileOverlay: getTileOverlay,
         getTileTexture: getTileTexture,
         getTileAction: getTileAction,
-        respawnEntities: respawnEntities
+        respawnEntities: respawnEntities,
+        getAdjCoord:getAdjCoord
     }
 }
 try {
