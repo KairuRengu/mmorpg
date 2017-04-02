@@ -4,9 +4,8 @@ var updateTicker = 0
     //////////////////////////////////////////////////////////////////////////////////////////
     //Singleton
 module.exports = function(app, UUID, socket, Zones) {
-    tickUpdater() 
+        tickUpdater()
         setInterval(function() { tickUpdater() }, 1000);
-
         socket.sockets.on('connection', function(client) {
             console.log('Unknown Player Connected');
             client.on("login", playerLogin);
@@ -14,14 +13,14 @@ module.exports = function(app, UUID, socket, Zones) {
             client.on("getPlayersServer", getPlayerList);
             client.on("actionPlayerServer", actionPlayer);
         });
+
         function tickUpdater() {
             // console.log("Tick: " + updateTicker)
             for (var zonesIndex = Zones.getZones().length - 1; zonesIndex >= 0; zonesIndex--) {
                 var updated = Zones.getZones()[zonesIndex].respawnEntities(updateTicker)
-                if (updated == true){
-                   socket.emit("updateZoneClient", { zone: Zones.getZones()[zonesIndex].getSerializedZone() });  
+                if (updated == true) {
+                    socket.emit("updateZoneClient", { zone: Zones.getZones()[zonesIndex].getSerializedZone() });
                 }
-               
             }
             updateTicker += 1
         }
@@ -99,6 +98,7 @@ module.exports = function(app, UUID, socket, Zones) {
                         actionPlayer.setX(zoneEntity.x2);
                         actionPlayer.setY(zoneEntity.y2);
                         actionPlayer.setZone(zoneEntity.zone);
+                        // console.log(Zones.getZone(zoneEntity.zone).getSerializedZone())
                         this.emit("actionPlayerClient", { action: 'zoneChange', player: actionPlayer.getSerializedPlayer(), zone: Zones.getZone(zoneEntity.zone).getSerializedZone() });
                     }
                     this.broadcast.emit("updatePlayersClient", { player: actionPlayer.getSerializedPlayer() });
@@ -126,7 +126,13 @@ module.exports = function(app, UUID, socket, Zones) {
                     var playerZone = Zones.getZone(actionPlayer.getZone())
                     var entity = playerZone.getEntity(data.pointX, data.pointY)
                     if (entity && entity.canAttack && coordDistance == 1) {
-                        entity.health -= 25
+                        //
+                        if (entity.name == "Grass") {
+                            entity.health -= 50
+                        } else {
+                            entity.health -= 25
+                        }
+                        //
                         if (entity.health <= 0) {
                             playerZone.removeEntity(entity)
                             this.emit("actionPlayerClient", { action: 'kill', success: true, entity: entity.name })

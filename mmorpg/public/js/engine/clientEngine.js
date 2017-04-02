@@ -457,7 +457,9 @@
        //Draw Overlays
        for (var x = 0; x < zone.getWidth(); x++) {
            for (var y = 0; y < zone.getHeight(); y++) {
-               ctx.drawImage(overlays, zone.getTileOverlay(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
+               if (zone.getTileOverlay(x, y) != 0) {
+                   ctx.drawImage(overlays, zone.getTileOverlay(x, y) * zone.getTileSize(), 0, zone.getTileSize(), zone.getTileSize(), x * zone.getTileSize(), y * zone.getTileSize(), zone.getTileSize(), zone.getTileSize());
+               }
            }
        }
    }

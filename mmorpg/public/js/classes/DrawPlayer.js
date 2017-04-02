@@ -1,5 +1,5 @@
      char = new Image();
-     char.src = "../assets/character1.png";
+     char.src = "../assets/character.png";
      var drawPlayer = function(player, ctx) {
          var xCoord = player.getX() * 32
          var yCoord = player.getY() * 32
