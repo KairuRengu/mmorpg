@@ -3,6 +3,7 @@ Project title: Jankscape
 Names of team members: Colin Gidzinski, Kyle Leng
 Statement: I claim that the enclosed submission is the work of the team members
 Project URL: https://cgidzinski.me/
+Github URL: https://github.com/cgidzinski/mmorpg
 
 Progect marking grid:
 Proposal:
