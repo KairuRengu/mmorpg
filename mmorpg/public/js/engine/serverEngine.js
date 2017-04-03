@@ -18,7 +18,8 @@ module.exports = function(app, UUID, socket, Zones) {
             // console.log("Tick: " + updateTicker)
             for (var zonesIndex = Zones.getZones().length - 1; zonesIndex >= 0; zonesIndex--) {
                 var updated = Zones.getZones()[zonesIndex].respawnEntities(updateTicker)
-                if (updated == true) {
+                var moved = Zones.getZones()[zonesIndex].moveMobs(updateTicker)
+                if (updated == true || moved == true) {
                     socket.emit("updateZoneClient", { zone: Zones.getZones()[zonesIndex].getSerializedZone() });
                 }
             }

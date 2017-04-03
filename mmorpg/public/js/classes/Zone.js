@@ -17,11 +17,45 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
         return entities
     }
 
+    function moveMobs(tick) {
+        var moved = false
+        for (var x = entities.length - 1; x >= 0; x--) {
+            if (entities[x].type == "mob") {
+                var healChance = Math.floor((Math.random() * 10) + 1);
+                var moveChance = Math.floor((Math.random() * 3) + 1);
+                var movedir = Math.floor((Math.random() * 4) + 1);
+                if (healChance == 1 && entities[x].health >= 75) {
+                    entities[x].health = 100
+                }
+                if (healChance == 1 && entities[x].health < 75) {
+                    entities[x].health = entities[x].health + 25
+                }
+                if (moveChance == 1) {
+                    if (movedir == 1 && getTileAction(entities[x].x + 1, entities[x].y) == 0) {
+                        entities[x].x = entities[x].x + 1
+                    }
+                    if (movedir == 2 && getTileAction(entities[x].x - 1, entities[x].y) == 0) {
+                        entities[x].x = entities[x].x - 1
+                    }
+                    if (movedir == 3 && getTileAction(entities[x].x, entities[x].y + 1) == 0) {
+                        entities[x].y = entities[x].y + 1
+                    }
+                    if (movedir == 4 && getTileAction(entities[x].x, entities[x].y - 1) == 0) {
+                        entities[x].y = entities[x].y - 1
+                    }
+                    moved = true
+                }
+            }
+        }
+        return moved
+    }
+
     function respawnEntities(tick) {
         var updated = false
         for (var i = defaultEntites.length - 1; i >= 0; i--) {
             if (!!entities.regen) {
-                continue }
+                continue
+            }
             var exists = false
             for (var x = entities.length - 1; x >= 0; x--) {
                 if (defaultEntites[i].id == entities[x].id) {
@@ -41,6 +75,7 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
         }
         return updated
     }
+
     function getSerializedZone() {
         return { name: name, textureMap: textureMap, actionMap: actionMap, overlayMap: overlayMap, width: width, height: height, entities: entities }
     };
@@ -103,22 +138,18 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
             return false
         }
     }
-        var getAdjCoord = function(x, y, dir) {
-        if (dir == "up" ) {
-                return {x:x,y:y-1}
-            
+    var getAdjCoord = function(x, y, dir) {
+        if (dir == "up") {
+            return { x: x, y: y - 1 }
         }
-        if (dir == "down" ) {
-                return {x:x,y:y+1}
-            
+        if (dir == "down") {
+            return { x: x, y: y + 1 }
         }
-        if (dir == "left" ) {
-                return {x:x-1,y:y}
-            
+        if (dir == "left") {
+            return { x: x - 1, y: y }
         }
-       if (dir == "right" ) {
-                return {x:x+1,y:y}
-            
+        if (dir == "right") {
+            return { x: x + 1, y: y }
         }
     }
     var removeEntity = function(ent) {
@@ -158,7 +189,8 @@ var Zone = function(name, width, height, textureMap, overlayMap, actionMap, enti
         getTileTexture: getTileTexture,
         getTileAction: getTileAction,
         respawnEntities: respawnEntities,
-        getAdjCoord:getAdjCoord
+        getAdjCoord: getAdjCoord,
+        moveMobs: moveMobs
     }
 }
 try {

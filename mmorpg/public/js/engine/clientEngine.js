@@ -42,10 +42,10 @@
        localPlayer = [];
        ctx.beginPath();
        ctx.rect(0, 0, canvas.width, canvas.height);
-       ctx.fillStyle = "white";
+       ctx.fillStyle = "black";
        ctx.fill();
        ctx.font = "50px Arial";
-       ctx.fillStyle = "black";
+       ctx.fillStyle = "white";
        ctx.fillText("Loading Jankscape", 50, 50);
        loadPlayerData(data)
        socket.emit("getPlayersServer");
