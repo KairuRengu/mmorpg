@@ -3,7 +3,7 @@ var DB = require('../../../models/models');
 var updateTicker = 0
     //////////////////////////////////////////////////////////////////////////////////////////
     //Singleton
-module.exports = function(app, UUID, socket, Zones) {
+module.exports = function(app, socket, Zones) {
         tickUpdater()
         setInterval(function() { tickUpdater() }, 1000);
         socket.sockets.on('connection', function(client) {

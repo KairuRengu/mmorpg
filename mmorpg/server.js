@@ -4,7 +4,6 @@
     var mongoose = require('mongoose');
     var config = require('./config/database.js');
     var cookieParser = require('cookie-parser')
-    var UUID = require('node-uuid')
     var http = require('http')
     var app = express()
     app.use(cookieParser())
@@ -23,7 +22,7 @@
     var fs = require('fs');
     loadMap(function() {
         console.log("===========================================Starting Game Engine");
-        require('./public/js/engine/serverEngine')(app, UUID, socket, Zones);
+        require('./public/js/engine/serverEngine')(app, socket, Zones);
         console.log("Game Engine Started");
         console.log("===========================================Serving Static Files");
         app.get('/', function(req, res) {

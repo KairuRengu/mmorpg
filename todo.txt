@@ -1,7 +1,0 @@
---Items--
--Json list of items
---turn into classes like zones/zone
-
---PVP--
---regen entities services--
---chat--
