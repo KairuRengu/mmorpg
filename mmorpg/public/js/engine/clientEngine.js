@@ -46,7 +46,7 @@
        ctx.fill();
        ctx.font = "50px Arial";
        ctx.fillStyle = "white";
-       ctx.fillText("Loading Jankscape", 0, 50);
+       ctx.fillText("Loading MMORPG", 0, 50);
        loadPlayerData(data)
        socket.emit("getPlayersServer");
        setEventHandlers();
